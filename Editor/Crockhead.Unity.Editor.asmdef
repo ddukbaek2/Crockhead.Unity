@@ -1,0 +1,10 @@
+{
+	"name": "Crockhead.Unity.Editor",
+	"rootNamespace": "Crockhead.Unity.Editor",
+	"references": [
+		"Crockhead.Unity"
+	],
+	"includePlatforms": [
+		"Editor"
+	]
+}

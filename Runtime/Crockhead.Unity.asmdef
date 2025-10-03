@@ -1,4 +1,18 @@
 {
 	"name": "Crockhead.Unity",
-	"rootNamespace": "Crockhead.Unity"
+	"rootNamespace": "Crockhead.Unity",
+	"references": [
+		"Crockhead.Core",
+		"Crockhead.Experimental",
+		"Crockhead.Table"
+	],
+	"includePlatforms": [],
+	"excludePlatforms": [],
+	"allowUnsafeCode": false,
+	"overrideReferences": false,
+	"precompiledReferences": [],
+	"autoReferenced": true,
+	"defineConstraints": [],
+	"versionDefines": [],
+	"noEngineReferences": false
 }

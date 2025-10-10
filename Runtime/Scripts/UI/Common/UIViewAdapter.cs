@@ -64,42 +64,42 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 기존의 윈도우에서 제거되기 직전 혹은 새로운 윈도우가 추가되기 직전에 호출됨.
 		/// </summary>
-		private void OnWillMoveToWindow(IUIWindow window)
+		internal void OnWillMoveToWindow(IUIWindow window)
 		{
 		}
 
 		/// <summary>
 		/// 기존의 윈도우에서 제거된 직후 혹은 새로운 윈도우가 추가된 직후 호출됨.
 		/// </summary>
-		private void OnDidMoveToWindow()
+		internal void OnDidMoveToWindow()
 		{
 		}
 
 		/// <summary>
 		/// 기존의 상위 뷰에서 제거되기 직전 혹은 새로운 상위 뷰가 추가되기 직전에 호출됨.
 		/// </summary>
-		private void OnWillMoveToSuperview(IUIView superview)
+		internal void OnWillMoveToSuperview(IUIView superview)
 		{
 		}
 
 		/// <summary>
 		/// 기존의 상위 뷰에서 제거된 직후 혹은 새로운 상위 뷰가 추가된 직후 호출됨.
 		/// </summary>
-		private void OnDidMoveToSuperview()
+		internal void OnDidMoveToSuperview()
 		{
 		}
 
 		/// <summary>
 		/// 기존의 하위 뷰가 현재 뷰에 추가된 직후 호출됨.
 		/// </summary>
-		private void OnDidAddSubview(IUIView subview)
+		internal void OnDidAddSubview(IUIView subview)
 		{
 		}
 
 		/// <summary>
 		/// 기존의 하위 뷰가 현재 뷰에서 제거되기 직전 호출됨.
 		/// </summary>
-		private void OnWillRemoveSubview(IUIView subview)
+		internal void OnWillRemoveSubview(IUIView subview)
 		{
 		}
 
@@ -363,21 +363,21 @@ namespace Crockhead.Unity.UI
 
 			var subviewAdapter = UIHelper.GetViewAdapter(subview);
 			var superviewAdapter = UIHelper.GetViewAdapter(superview);
-			var superviewWindow = subviewAdapter.Window;
+			var superviewWindow = superviewAdapter.Window;
 			var hasWindowAttachEvent = superviewWindow != null;
 
 			// 하위 뷰: 상위 뷰 변경 시작됨.
 			subviewAdapter.OnWillMoveToSuperview(superviewAdapter.View);
 
-			// 처리: 상위 뷰에 하위 뷰 추가.
-			onAddContainer.Invoke(superviewAdapter, subviewAdapter);
-
 			// 하위 뷰: 윈도우 변경 시작됨.
 			if (hasWindowAttachEvent)
 				subviewAdapter.OnWillMoveToWindow(superviewAdapter.Window);
 
+			// 처리: 상위 뷰에 하위 뷰 추가.
+			onAddContainer?.Invoke(superviewAdapter, subviewAdapter);
+
 			// 처리: 유니티 트랜스폼 계층 구조 설정.
-			onAddTransform.Invoke(superviewAdapter, subviewAdapter);
+			onAddTransform?.Invoke(superviewAdapter, subviewAdapter);
 
 			// 처리: 하위 뷰의 상위 뷰 설정.
 			subviewAdapter.Superview = superviewAdapter.View;
@@ -457,7 +457,6 @@ namespace Crockhead.Unity.UI
 			if (hasWindowDetachEvent)
 				subviewAdapter.OnDidMoveToWindow();
 
-			//onRemoved?.Invoke(subviewAdapter, hasSuperviewDetachEvent ? superviewAdapter : null, hasWindowDetachEvent ? subviewWindow : null);
 			onRemoved?.Invoke(subviewAdapter, superviewAdapter, subviewWindow);
 			return true;
 		}

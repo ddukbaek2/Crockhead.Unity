@@ -56,6 +56,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnWillMoveToWindow(IUIWindow window)
 		{
+			m_ViewAdapter.OnWillMoveToWindow(window);
 		}
 
 		/// <summary>
@@ -63,6 +64,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnDidMoveToWindow()
 		{
+			m_ViewAdapter.OnDidMoveToWindow();
 		}
 
 		/// <summary>
@@ -70,6 +72,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnWillMoveToSuperview(IUIView superview)
 		{
+			m_ViewAdapter.OnWillMoveToSuperview(superview);
 		}
 
 		/// <summary>
@@ -77,6 +80,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnDidMoveToSuperview()
 		{
+			m_ViewAdapter.OnDidMoveToSuperview();
 		}
 
 		/// <summary>
@@ -84,6 +88,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnDidAddSubview(IUIView subview)
 		{
+			m_ViewAdapter.OnDidAddSubview(subview);
 		}
 
 		/// <summary>
@@ -91,6 +96,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnWillRemoveSubview(IUIView subview)
 		{
+			m_ViewAdapter.OnWillRemoveSubview(subview);
 		}
 
 		/// <summary>

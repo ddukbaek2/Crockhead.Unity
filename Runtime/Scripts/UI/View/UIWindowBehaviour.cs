@@ -105,6 +105,7 @@ namespace Crockhead.Unity.UI
 			if (m_RootViewController == null)
 				return;
 
+			m_RootViewController.View.RectTransform.SetParent(RectTransform, false);
 			UIViewController.StartViewAppear(m_RootViewController);
 		}
 	}

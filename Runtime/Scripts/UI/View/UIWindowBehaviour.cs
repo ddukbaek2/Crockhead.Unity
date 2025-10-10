@@ -1,17 +1,15 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
 namespace Crockhead.Unity.UI
 {
 	/// <summary>
-	/// 윈도우. (컴포넌트)
+	/// 기본 윈도우. (컴포넌트)
 	/// </summary>
 	[ExecuteAlways]
 	[RequireComponent(typeof(Canvas))]
-	public sealed class UIWindow : UIViewBehaviour
+	public sealed class UIWindowBehaviour : UIViewBehaviour, IUIWindow
 	{
 		/// <summary>
 		/// 캔버스.

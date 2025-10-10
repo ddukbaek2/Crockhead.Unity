@@ -14,7 +14,7 @@ namespace Crockhead.Unity.UI
 	{
 		private delegate void OnAddContainerEvent(UIViewAdapter superview, UIViewAdapter subview);
 		private delegate void OnAddTransformEvent(UIViewAdapter superview, UIViewAdapter subview);
-		private delegate void OnRemovedEvent(UIViewAdapter subview, UIViewAdapter removedSuperview, UIWindow removedWindow);
+		private delegate void OnRemovedEvent(UIViewAdapter subview, UIViewAdapter removedSuperview, IUIWindow removedWindow);
 
 		/// <summary>
 		/// 대상 뷰 프로퍼티.
@@ -29,7 +29,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 윈도우 프로퍼티.
 		/// </summary>
-		public UIWindow Window { internal set; get; }
+		public IUIWindow Window { internal set; get; }
 
 		/// <summary>
 		/// 상위 뷰 프로퍼티.
@@ -64,7 +64,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 기존의 윈도우에서 제거되기 직전 혹은 새로운 윈도우가 추가되기 직전에 호출됨.
 		/// </summary>
-		private void OnWillMoveToWindow(UIWindow window)
+		private void OnWillMoveToWindow(IUIWindow window)
 		{
 		}
 
@@ -104,6 +104,13 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
+		/// 현재 모든 하위 뷰를 수집.
+		/// </summary>
+		public void CollectAllSubviews()
+		{
+		}
+
+		/// <summary>
 		/// 현재 뷰의 맨 마지막 위치에 하위 뷰 추가.
 		/// </summary>
 		public void AddSubview(IUIView subview)
@@ -122,7 +129,7 @@ namespace Crockhead.Unity.UI
 			// 새로운 상위 뷰 등록.
 			UIViewAdapter.StartAddToSuperview(subview, View, OnAddCollection, OnAddChildTransform);
 
-			static void OnRemovedEvent(UIViewAdapter subview, UIViewAdapter removedSuperview, UIWindow removedWindow)
+			static void OnRemovedEvent(UIViewAdapter subview, UIViewAdapter removedSuperview, IUIWindow removedWindow)
 			{
 				//var hasSuperviewDetachEvent = removedSuperview != null;
 				//var hasWindowDetachEvent = removedWindow != null;
@@ -160,7 +167,7 @@ namespace Crockhead.Unity.UI
 			var siblingIndex = index;
 			UIViewAdapter.StartAddToSuperview(subview, View, OnAddCollection, OnAddTransform);
 
-			static void OnRemovedEvent(UIViewAdapter subview, UIViewAdapter removedSuperview, UIWindow removedWindow)
+			static void OnRemovedEvent(UIViewAdapter subview, UIViewAdapter removedSuperview, IUIWindow removedWindow)
 			{
 				//var hasSuperviewDetachEvent = removedSuperview != null;
 				//var hasWindowDetachEvent = removedWindow != null;
@@ -208,7 +215,7 @@ namespace Crockhead.Unity.UI
 			var siblingIndex = Subviews.Count - 1;
 			UIViewAdapter.StartAddToSuperview(subview, View, OnAddCollection, OnAddTransform);
 
-			static void OnRemovedEvent(UIViewAdapter subview, UIViewAdapter removedSuperview, UIWindow removedWindow)
+			static void OnRemovedEvent(UIViewAdapter subview, UIViewAdapter removedSuperview, IUIWindow removedWindow)
 			{
 				//var hasSuperviewDetachEvent = removedSuperview != null;
 				//var hasWindowDetachEvent = removedWindow != null;
@@ -265,7 +272,7 @@ namespace Crockhead.Unity.UI
 			var siblingIndex = Subviews.Count - 1;
 			UIViewAdapter.StartAddToSuperview(subview, View, OnAddCollection, OnAddTransform);
 
-			static void OnRemovedEvent(UIViewAdapter subview, UIViewAdapter removedSuperview, UIWindow removedWindow)
+			static void OnRemovedEvent(UIViewAdapter subview, UIViewAdapter removedSuperview, IUIWindow removedWindow)
 			{
 				//var hasSuperviewDetachEvent = removedSuperview != null;
 				//var hasWindowDetachEvent = removedWindow != null;

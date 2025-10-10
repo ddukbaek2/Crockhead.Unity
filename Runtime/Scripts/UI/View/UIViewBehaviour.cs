@@ -27,7 +27,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 윈도우 프로퍼티.
 		/// </summary>
-		public UIWindow Window => m_ViewAdapter.Window;
+		public IUIWindow Window => m_ViewAdapter.Window;
 
 		/// <summary>
 		/// 상위 뷰 프로퍼티.
@@ -54,6 +54,49 @@ namespace Crockhead.Unity.UI
 		protected override void OnDestroy()
 		{
 			Disposables.Dispose(m_ViewAdapter);
+		}
+
+
+		/// <summary>
+		/// 기존의 윈도우에서 제거되기 직전 혹은 새로운 윈도우가 추가되기 직전에 호출됨.
+		/// </summary>
+		protected virtual void OnWillMoveToWindow(IUIWindow window)
+		{
+		}
+
+		/// <summary>
+		/// 기존의 윈도우에서 제거된 직후 혹은 새로운 윈도우가 추가된 직후 호출됨.
+		/// </summary>
+		protected virtual void OnDidMoveToWindow()
+		{
+		}
+
+		/// <summary>
+		/// 기존의 상위 뷰에서 제거되기 직전 혹은 새로운 상위 뷰가 추가되기 직전에 호출됨.
+		/// </summary>
+		protected virtual void OnWillMoveToSuperview(IUIView superview)
+		{
+		}
+
+		/// <summary>
+		/// 기존의 상위 뷰에서 제거된 직후 혹은 새로운 상위 뷰가 추가된 직후 호출됨.
+		/// </summary>
+		protected virtual void OnDidMoveToSuperview()
+		{
+		}
+
+		/// <summary>
+		/// 기존의 하위 뷰가 현재 뷰에 추가된 직후 호출됨.
+		/// </summary>
+		protected virtual void OnDidAddSubview(IUIView subview)
+		{
+		}
+
+		/// <summary>
+		/// 기존의 하위 뷰가 현재 뷰에서 제거되기 직전 호출됨.
+		/// </summary>
+		protected virtual void OnWillRemoveSubview(IUIView subview)
+		{
 		}
 
 		/// <summary>

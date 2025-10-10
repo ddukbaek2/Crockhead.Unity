@@ -30,6 +30,15 @@ namespace Crockhead.Unity.UI
 			base.OnDispose(explicitDisposing);
 		}
 
+		/// <summary>
+		/// 뷰 로드 시작됨.
+		/// </summary>
+		protected override IUIView OnViewWillLoad()
+		{
+			//return base.OnViewWillLoad();
+			return null;
+		}
+
 		public void Push(UIViewController viewController)
 		{
 		}

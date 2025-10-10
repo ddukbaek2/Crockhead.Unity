@@ -45,11 +45,11 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 윈도우 생성.
 		/// </summary>
-		public static UIWindow CreateWindow(Vector2Int size)
+		public static IUIWindow CreateWindow(Vector2Int size)
 		{
 			var width = size.x;
 			var height = size.y;
-			var obj = new GameObject("UIWindow");
+			var obj = new GameObject("UIWindowBehaviour");
 			obj.layer = LayerMask.NameToLayer("UI");
 			obj.transform.localPosition = Vector3.zero;
 			obj.transform.localScale = Vector3.one;
@@ -64,7 +64,7 @@ namespace Crockhead.Unity.UI
 			canvasScaler.matchWidthOrHeight = width > height ? 1f : 0f; // 가로가 길면 세로 기준, 세로가 길면 가로 기준.
 			canvasScaler.referencePixelsPerUnit = 100f;
 			var graphicRaycaster = obj.AddComponent<GraphicRaycaster>();			
-			var window = obj.AddComponent<UIWindow>();
+			var window = obj.AddComponent<UIWindowBehaviour>();
 			return window;
 		}
 

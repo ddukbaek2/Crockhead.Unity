@@ -18,7 +18,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 윈도우 프로퍼티.
 		/// </summary>
-		UIWindow Window { get; }
+		IUIWindow Window { get; }
 
 		/// <summary>
 		/// 상위 뷰 프로퍼티.

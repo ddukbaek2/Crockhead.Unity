@@ -15,7 +15,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 윈도우.
 		/// </summary>
-		private UIWindow m_Window;
+		private IUIWindow m_Window;
 
 		/// <summary>
 		/// 부모.
@@ -55,7 +55,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 윈도우 프로퍼티.
 		/// </summary>
-		public UIWindow Window
+		public IUIWindow Window
 		{
 			internal set => m_Window = value;
 			get => m_Window;
@@ -104,7 +104,11 @@ namespace Crockhead.Unity.UI
 			get
 			{
 				if (m_View == null)
-					OnViewWillLoad();
+				{
+					m_View = OnViewWillLoad();
+					OnViewDidLoad();
+				}
+
 				return m_View;
 			}
 		}
@@ -138,14 +142,14 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 로드 시작됨.
 		/// </summary>
-		protected virtual void OnViewWillLoad()
+		protected virtual IUIView OnViewWillLoad()
 		{
 			if (IsViewLoaded)
-				return;
+				return m_View;
 
 			var type = GetType();
-			m_View = UIHelper.CreateView(type);
-			OnViewDidLoad();
+			var view = UIHelper.CreateView(type);
+			return view;
 		}
 
 		/// <summary>

@@ -47,7 +47,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 윈도우 목록.
 		/// </summary>
-		private List<UIWindow> m_Windows;
+		private List<IUIWindow> m_Windows;
 
 		/// <summary>
 		/// 렉트 트랜스폼 프로퍼티.
@@ -57,7 +57,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 윈도우 목록 프로퍼티.
 		/// </summary>
-		public IEnumerable<UIWindow> Windows => m_Windows;
+		public IEnumerable<IUIWindow> Windows => m_Windows;
 
 		/// <summary>
 		/// 활성화 상태 프로퍼티.
@@ -78,7 +78,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected sealed override void Awake()
 		{
-			m_Windows = new List<UIWindow>();
+			m_Windows = new List<IUIWindow>();
 			m_RectTransform = GetComponent<RectTransform>();
 		}
 
@@ -89,10 +89,21 @@ namespace Crockhead.Unity.UI
 		{
 			foreach (var window in m_Windows)
 			{
-				if (window == null || window.IsDestroyed())
+				if (window == null)
 					continue;
 
-				GameObject.Destroy(window.gameObject);
+				switch (window)
+				{
+					case UIWindowBehaviour:
+						{
+							var windowBehaviour = window as UIWindowBehaviour;
+							if (windowBehaviour.IsDestroyed())
+								break;
+
+							GameObject.Destroy(windowBehaviour.gameObject);
+							break;
+						}
+				}
 			}
 
 			m_Windows.Clear();
@@ -101,7 +112,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 윈도우 추가.
 		/// </summary>
-		public void AddWindow(UIWindow window)
+		public void AddWindow(IUIWindow window)
 		{
 			if (window == null)
 				return;
@@ -115,7 +126,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 윈도우 제거.
 		/// </summary>
-		public void RemoveWindow(UIWindow window)
+		public void RemoveWindow(IUIWindow window)
 		{
 			if (window == null)
 				return;

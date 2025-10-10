@@ -2,6 +2,8 @@
 	"name": "Crockhead.Unity",
 	"rootNamespace": "Crockhead.Unity",
 	"references": [
+		"Unity.InputSystem",
+		"Unity.TextMeshPro",
 		"Crockhead.Core",
 		"Crockhead.Experimental",
 		"Crockhead.Table"

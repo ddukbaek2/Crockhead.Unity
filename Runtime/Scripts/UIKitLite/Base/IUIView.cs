@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Crockhead.Unity.UI
+namespace Crockhead.Unity.UIKitLite
 {
 	/// <summary>
 	/// 뷰 인터페이스.
-	/// <para>UI의 시각적 단위 객체. (유니티에서는 UI 컴포넌트)</para>
+	/// <para>UI의 시각적 단위 객체. (유니티에서는 UIKitLite 컴포넌트)</para>
 	/// </summary>
 	public interface IUIView
 	{

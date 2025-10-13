@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace Crockhead.Unity.UI
+namespace Crockhead.Unity.UIKitLite
 {
 	/// <summary>
 	/// 기본 윈도우. (컴포넌트)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Crockhead.Unity.UI
+namespace Crockhead.Unity.UIKitLite
 {
 	/// <summary>
 	/// 기본 뷰. (클래스)

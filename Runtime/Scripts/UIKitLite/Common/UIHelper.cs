@@ -1,19 +1,51 @@
 using Crockhead.Core;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 
-namespace Crockhead.Unity.UI
+namespace Crockhead.Unity.UIKitLite
 {
 	/// <summary>
-	/// UI 유틸리티.
+	/// UIKitLite 유틸리티.
 	/// </summary>
 	public static class UIHelper
 	{
+
+		/// <summary>
+		/// 이벤트 함수 목록.
+		/// </summary>
+		public readonly static string[] ViewEventMethodNames = new string[]
+		{
+			"OnWillMoveToWindow",
+			"OnDidMoveToWindow",
+			"OnWillMoveToSuperview",
+			"OnDidMoveToSuperview",
+			"OnWillMoveToWindow",
+			"OnWillMoveToWindow",
+			"OnDidAddSubview",
+			"OnWillRemoveSubview",
+		};
+
+
+		/// <summary>
+		/// 이벤트 목록.
+		/// </summary>
+		private static Dictionary<Type, Dictionary<string, MethodInfo>> s_CachedViewEvents;
+
+		/// <summary>
+		/// 생성됨.
+		/// </summary>
+		static UIHelper()
+		{
+			s_CachedViewEvents = new Dictionary<Type, Dictionary<string, MethodInfo>>();
+		}
+
 		/// <summary>
 		/// 애플리케이션 생성.
 		/// </summary>
@@ -33,7 +65,7 @@ namespace Crockhead.Unity.UI
 		public static UIScene CreateScene()
 		{
 			var obj = new GameObject("UIScene");
-			obj.layer = LayerMask.NameToLayer("UI");
+			obj.layer = LayerMask.NameToLayer("UIKitLite");
 			obj.transform.localPosition = Vector3.zero;
 			obj.transform.localScale = Vector3.one;
 			obj.transform.localEulerAngles = Vector3.zero;
@@ -50,7 +82,7 @@ namespace Crockhead.Unity.UI
 			var width = size.x;
 			var height = size.y;
 			var obj = new GameObject("UIWindowBehaviour");
-			obj.layer = LayerMask.NameToLayer("UI");
+			obj.layer = LayerMask.NameToLayer("UIKitLite");
 			obj.transform.localPosition = Vector3.zero;
 			obj.transform.localScale = Vector3.one;
 			obj.transform.localEulerAngles = Vector3.zero;
@@ -107,7 +139,7 @@ namespace Crockhead.Unity.UI
 				var obj = LoadGameObject(path, type);
 				var view = obj.GetComponent<IUIView>();
 				if (view == null)
-					throw new MissingComponentException($"[Crockhead.Unity.UI] CreateView(): Path=`{path}`, Type=`{type}`");
+					throw new MissingComponentException($"[Crockhead.Unity.UIKitLite] CreateView(): Path=`{path}`, Type=`{type}`");
 				return view;
 			}
 			catch (Exception exception)
@@ -126,11 +158,11 @@ namespace Crockhead.Unity.UI
 			{
 				// UIViewController 타입 체크.
 				if (!Reflections.IsBaseClass(viewControllerType, typeof(UIViewController)))
-					throw new InvalidCastException($"[Crockhead.Unity.UI] CreateView(): {viewControllerType}");
+					throw new InvalidCastException($"[Crockhead.Unity.UIKitLite] CreateView(): {viewControllerType}");
 
 				// AssetPathAttribute 특성 체크.
 				if (!Reflections.TryGetAttribute<AssetPathAttribute>(viewControllerType, out var assetPathAttribute))
-					throw new InvalidOperationException("[Crockhead.Unity.UI] CreateView(): Not found AssetPathAttribute.");
+					throw new InvalidOperationException("[Crockhead.Unity.UIKitLite] CreateView(): Not found AssetPathAttribute.");
 
 				var view = CreateView(assetPathAttribute.Value, assetPathAttribute.Type);
 				return view;
@@ -204,6 +236,42 @@ namespace Crockhead.Unity.UI
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// 뷰 이벤트 설정.
+		/// </summary>
+		internal static void SetViewEvents(Type viewType)
+		{
+			if (!s_CachedViewEvents.TryGetValue(viewType, out var methodInfos))
+			{
+				methodInfos = new Dictionary<string, MethodInfo>();
+				var bindingFlags = BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic;
+				foreach (var viewEventMethodName in ViewEventMethodNames)
+				{
+					var methodInfo = viewType.GetMethod(viewEventMethodName, bindingFlags);
+					if (methodInfo == null)
+						continue;
+					methodInfos.Add(viewEventMethodName, methodInfo);
+				}
+
+				s_CachedViewEvents.Add(viewType, methodInfos);
+			}
+		}
+
+		/// <summary>
+		/// 뷰 이벤트 호출.
+		/// </summary>
+		internal static void ExecuteViewEvent(this IUIView view, string methodName, params object[] arguments)
+		{
+			var viewType = view.GetType();
+			if (!s_CachedViewEvents.TryGetValue(viewType, out var methodInfos))
+				throw new InvalidOperationException($"{viewType}");
+
+			if (!methodInfos.TryGetValue(methodName, out var methodInfo))
+				throw new InvalidOperationException($"{methodName}");
+
+			methodInfo.Invoke(view, arguments);
 		}
 	}
 }

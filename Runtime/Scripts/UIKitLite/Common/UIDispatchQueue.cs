@@ -2,10 +2,10 @@ using Crockhead.Core;
 using System;
 
 
-namespace Crockhead.Unity.UI
+namespace Crockhead.Unity.UIKitLite
 {
 	/// <summary>
-	/// UI 작업 큐.
+	/// UIKitLite 작업 큐.
 	/// </summary>
 	public class UIDispatchQueue : Disposable
 	{

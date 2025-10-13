@@ -2,7 +2,7 @@ using Crockhead.Core;
 using System.Collections.Generic;
 
 
-namespace Crockhead.Unity.UI
+namespace Crockhead.Unity.UIKitLite
 {
 	/// <summary>
 	/// 네비게이션 컨트롤러.

@@ -57,7 +57,7 @@ namespace Crockhead.Unity
 		}
 
 		/// <summary>
-		/// 한 프레임 대기.
+		/// 다음 프레임까지 대기.
 		/// </summary>
 		public static Coroutine WaitForNextFrame(Action action)
 		{

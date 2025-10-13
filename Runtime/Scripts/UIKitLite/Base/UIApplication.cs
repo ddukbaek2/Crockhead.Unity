@@ -2,10 +2,10 @@ using Crockhead.Core;
 using System.Collections.Generic;
 
 
-namespace Crockhead.Unity.UI
+namespace Crockhead.Unity.UIKitLite
 {
 	/// <summary>
-	/// UI 애플리케이션.
+	/// UIKitLite 애플리케이션.
 	/// </summary>
 	public class UIApplication : Disposable
 	{

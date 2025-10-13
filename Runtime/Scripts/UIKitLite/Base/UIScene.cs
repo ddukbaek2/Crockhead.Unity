@@ -3,10 +3,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
-namespace Crockhead.Unity.UI
+namespace Crockhead.Unity.UIKitLite
 {
 	/// <summary>
-	/// UI 씬.
+	/// UIKitLite 씬.
 	/// </summary>
 	[ExecuteAlways]
 	[RequireComponent(typeof(RectTransform))]

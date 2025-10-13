@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Crockhead.Unity.UI
+namespace Crockhead.Unity.UIKitLite
 {
 	/// <summary>
 	/// 뷰. (클래스)
@@ -52,6 +52,9 @@ namespace Crockhead.Unity.UI
 			Window = null;
 			Superview = null;
 			Subviews = new List<IUIView>();
+
+			var viewType = view.GetType();
+			UIHelper.SetViewEvents(viewType);
 		}
 
 		/// <summary>
@@ -66,6 +69,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		internal void OnWillMoveToWindow(IUIWindow window)
 		{
+			UIHelper.ExecuteViewEvent(View, "OnWillMoveToWindow", window);
 		}
 
 		/// <summary>
@@ -73,6 +77,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		internal void OnDidMoveToWindow()
 		{
+			UIHelper.ExecuteViewEvent(View, "OnDidMoveToWindow");
 		}
 
 		/// <summary>
@@ -80,6 +85,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		internal void OnWillMoveToSuperview(IUIView superview)
 		{
+			UIHelper.ExecuteViewEvent(View, "OnWillMoveToSuperview", superview);
 		}
 
 		/// <summary>
@@ -87,6 +93,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		internal void OnDidMoveToSuperview()
 		{
+			UIHelper.ExecuteViewEvent(View, "OnDidMoveToSuperview");
 		}
 
 		/// <summary>
@@ -94,6 +101,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		internal void OnDidAddSubview(IUIView subview)
 		{
+			UIHelper.ExecuteViewEvent(View, "OnDidAddSubview", subview);
 		}
 
 		/// <summary>
@@ -101,6 +109,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		internal void OnWillRemoveSubview(IUIView subview)
 		{
+			UIHelper.ExecuteViewEvent(View, "OnWillRemoveSubview", subview);
 		}
 
 		/// <summary>
@@ -348,7 +357,7 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 대상 하위 뷰를 상위 뷰에게 추가.
+		/// 대상 하위 뷰를 상위 뷰에게 추가. (내부용)
 		/// </summary>
 		private static bool StartAddToSuperview(IUIView subview, IUIView superview, OnAddContainerEvent onAddContainer, OnAddTransformEvent onAddTransform)
 		{
@@ -400,7 +409,7 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 대상 하위 뷰를 상위 뷰에게서 제거.
+		/// 대상 하위 뷰를 상위 뷰에게서 제거. (내부용)
 		/// </summary>
 		private static bool StartRemoveFromSuperview(IUIView subview, OnRemovedEvent onRemoved = null)
 		{

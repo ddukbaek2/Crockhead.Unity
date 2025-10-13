@@ -1,4 +1,4 @@
-namespace Crockhead.Unity.UI
+namespace Crockhead.Unity.UIKitLite
 {
 	/// <summary>
 	/// 윈도우 인터페이스.

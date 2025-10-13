@@ -70,7 +70,7 @@
 //				yield break;
 //			}
 
-//			var component = await TaskExtensions.StartTask<TComponent>(m_Owner, Process);
+//			var component = await TaskExtensions.WaitForForground<TComponent>(m_Owner, Process);
 //			return component;
 //		}
 //	}

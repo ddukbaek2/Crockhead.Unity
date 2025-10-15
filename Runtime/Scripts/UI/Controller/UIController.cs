@@ -14,9 +14,9 @@ namespace Crockhead.Unity.UI
 	public class UIController : Disposable
 	{
 		/// <summary>
-		/// 표시 상태.
+		/// 트랜지션 상태.
 		/// </summary>
-		public enum UIPresentationStatus
+		public enum UITransitionStatus
 		{
 			/// <summary>
 			/// 없음.
@@ -51,12 +51,12 @@ namespace Crockhead.Unity.UI
 		private UIView m_View;
 
 		/// <summary>
-		/// 상태.
+		/// 트랜지션 상태.
 		/// </summary>
-		private UIPresentationStatus m_PresentationStatus;
+		private UITransitionStatus m_TransitionStatus;
 
 		/// <summary>
-		/// 발표 조정자.
+		/// 프레젠테이션 조정자.
 		/// </summary>
 		private UIPresentationCoordinator m_PresentationCoordinator;
 
@@ -91,12 +91,17 @@ namespace Crockhead.Unity.UI
 		public UIView ViewIfLoaded => m_View;
 
 		/// <summary>
+		/// 프레젠테이션 조정자 프로퍼티.
+		/// </summary>
+		public UIPresentationCoordinator PresentationCoordinator { internal set => m_PresentationCoordinator = value; get => m_PresentationCoordinator; }
+
+		/// <summary>
 		/// 생성됨.
 		/// </summary>
 		public UIController() : base()
 		{
 			m_View = null;
-			m_PresentationStatus = UIPresentationStatus.None;
+			m_TransitionStatus = UITransitionStatus.None;
 			m_PresentationCoordinator = null;
 			m_TransitionCoordinator = null;
 			m_Parent = null;
@@ -129,9 +134,11 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnViewWillAppear(bool animated)
 		{
-			m_PresentationStatus = UIPresentationStatus.Appearing;
+			m_TransitionStatus = UITransitionStatus.Appearing;
 			foreach (var child in m_Children)
+			{
 				child.BeginAppearanceTransition(true, animated);
+			}
 		}
 
 		/// <summary>
@@ -139,9 +146,11 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnViewDidAppear()
 		{
-			m_PresentationStatus = UIPresentationStatus.Appeared;
+			m_TransitionStatus = UITransitionStatus.Appeared;
 			foreach (var child in m_Children)
-				child.OnViewDidAppear();
+			{
+				child.EndAppearanceTransition();
+			}
 		}
 
 		/// <summary>
@@ -149,9 +158,11 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnViewWillDisappear(bool animated)
 		{
-			m_PresentationStatus = UIPresentationStatus.Disappearing;
+			m_TransitionStatus = UITransitionStatus.Disappearing;
 			foreach (var child in m_Children)
+			{
 				child.BeginAppearanceTransition(false, animated);
+			}
 		}
 
 		/// <summary>
@@ -159,9 +170,11 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnViewDidDisappear()
 		{
-			m_PresentationStatus = UIPresentationStatus.Disappeared;
+			m_TransitionStatus = UITransitionStatus.Disappeared;
 			foreach (var child in m_Children)
-				child.OnViewDidDisappear();
+			{
+				child.EndAppearanceTransition();
+			}
 		}
 
 		/// <summary>
@@ -237,8 +250,8 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 출력.
-		/// <para>체인에서 가장 뒤에 추가됨.</para>
+		/// 표시.
+		/// <para>프레젠테이션 체인에서 가장 뒤에 추가됨.</para>
 		/// </summary>
 		public void Present(UIController controller, bool animated)
 		{
@@ -248,7 +261,7 @@ namespace Crockhead.Unity.UI
 			try
 			{
 				// 현재 컨트롤러의 발표자와 동일한 도메인으로 조정자 확정.
-				controller.SetPresentationCoordinator(m_PresentationCoordinator);
+				controller.PresentationCoordinator = m_PresentationCoordinator;
 				controller.m_PresentationCoordinator.Present(controller, animated);
 			}
 			catch
@@ -262,12 +275,12 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 출력 철회.
+		/// 표시 중단. (철회)
 		/// <para>가장 나중에 열린 객체부터 현재 객체까지 모든 열린 객체는 역순으로 닫힘.</para>
 		/// </summary>
 		public void Retract(bool animated)
 		{
-			// 발표 조정자가 없는 경우 발표되지 않은 것. 
+			// 프레젠테이션 조정자가 없는 경우 발표되지 않은 것. 
 			if (m_PresentationCoordinator == null)
 				return;
 
@@ -286,32 +299,16 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 발표 조정자 참조 설정. (내부용)
-		/// </summary>
-		internal void SetPresentationCoordinator(UIPresentationCoordinator presentationCoordinator)
-		{
-			m_PresentationCoordinator = presentationCoordinator;
-		}
-
-		/// <summary>
-		/// 전환 조정자 참조 설정. (내부용)
-		/// </summary>
-		internal void SetTransitionCoordinator(UITransitionCoordinator transitionCoordinator)
-		{
-			m_TransitionCoordinator = transitionCoordinator;
-		}
-
-		/// <summary>
 		/// 등장/퇴장 시작 설정.
 		/// </summary>
 		public void BeginAppearanceTransition(bool isAppearing, bool animated)
 		{
 			// 열기나 닫기가 진행 중이면 제외.
-			if (m_PresentationStatus == UIPresentationStatus.Appearing || m_PresentationStatus == UIPresentationStatus.Disappearing)
+			if (m_TransitionStatus == UITransitionStatus.Appearing || m_TransitionStatus == UITransitionStatus.Disappearing)
 				return;
 
 			// 이미 열기 되었는데 또 열려고 하거나 닫기 되었는데 또 닫으려고 하면 제외.
-			if ((m_PresentationStatus == UIPresentationStatus.Appeared && isAppearing) || (m_PresentationStatus == UIPresentationStatus.Disappeared && !isAppearing))
+			if ((m_TransitionStatus == UITransitionStatus.Appeared && isAppearing) || (m_TransitionStatus == UITransitionStatus.Disappeared && !isAppearing))
 				return;
 
 			if (isAppearing)
@@ -329,20 +326,36 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		public void EndAppearanceTransition()
 		{
-			switch (m_PresentationStatus)
+			switch (m_TransitionStatus)
 			{
-				case UIPresentationStatus.Appearing:
+				case UITransitionStatus.Appearing:
 					{
 						OnViewDidAppear();
 						break;
 					}
 
-				case UIPresentationStatus.Disappearing:
+				case UITransitionStatus.Disappearing:
 					{
 						OnViewDidDisappear();
 						break;
 					}
 			}
+		}
+
+		/// <summary>
+		/// 전환 조정자 참조 설정. (내부용)
+		/// </summary>
+		internal void SetTransitionCoordinator(UITransitionCoordinator transitionCoordinator)
+		{
+			m_TransitionCoordinator = transitionCoordinator;
+		}
+
+		/// <summary>
+		/// 자식 여부.
+		/// </summary>
+		public bool IsChildren(UIController controller)
+		{
+			return m_Children.Contains(controller);
 		}
 	}
 }

@@ -12,6 +12,16 @@ namespace Crockhead.Unity.UI
 	public class UICanvasView : UIView
 	{
 		/// <summary>
+		/// 프레젠테이션 조정자.
+		/// </summary>
+		private UIPresentationCoordinator m_PresentationCoordinator;
+
+		/// <summary>
+		/// 시작 컨트롤러.
+		/// </summary>
+		private UIController m_TargetController;
+
+		/// <summary>
 		/// 캔버스.
 		/// </summary>
 		private Canvas m_Canvas;
@@ -48,6 +58,8 @@ namespace Crockhead.Unity.UI
 		{
 			base.Awake();
 
+			m_PresentationCoordinator = new UIPresentationCoordinator();
+			m_TargetController = null;
 			m_Canvas = GetComponent<Canvas>();
 			m_CanvasScaler = GetComponent<CanvasScaler>();
 			m_GraphicRaycaster = GetComponent<GraphicRaycaster>();
@@ -62,11 +74,24 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// .
+		/// 표시.
 		/// </summary>
 		public void Present(UIController controller)
 		{
-			//controller.View
+			if (controller == null)
+				return;
+
+			if (controller.PresentationCoordinator != null)
+				return;
+
+			if (m_TargetController != null)
+				return;
+
+			m_TargetController = controller;
+
+			// 체인 설정 및 출력.
+			m_TargetController.PresentationCoordinator = m_PresentationCoordinator;
+			m_PresentationCoordinator.Present(m_TargetController, false);
 		}
 	}
 }

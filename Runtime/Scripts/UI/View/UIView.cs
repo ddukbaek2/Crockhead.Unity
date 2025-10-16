@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -45,6 +47,15 @@ namespace Crockhead.Unity.UI
 		protected override void OnDestroy()
 		{
 			base.OnDestroy();
+		}
+
+		/// <summary>
+		/// 애니메이션.
+		/// </summary>
+		public static async Task Animate(UIView view, float duration, Action animation)
+		{
+			var animator = new UIAnimator(view);
+			await animator.AnimateAsync(duration, animation);
 		}
 	}
 }

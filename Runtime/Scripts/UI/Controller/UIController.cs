@@ -286,7 +286,7 @@ namespace Crockhead.Unity.UI
 
 			try
 			{
-				m_PresentationCoordinator.Retract(this, animated);
+				m_PresentationCoordinator.RetractAsync(this, animated);
 			}
 			catch
 			{

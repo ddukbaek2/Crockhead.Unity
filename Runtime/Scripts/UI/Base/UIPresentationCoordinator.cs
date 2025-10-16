@@ -1,6 +1,7 @@
 using Crockhead.Core;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -55,10 +56,14 @@ namespace Crockhead.Unity.UI
 		private UIPresentationState m_State;
 
 		/// <summary>
+		/// 트랜지션 처리기.
+		/// </summary>
+		private UITransitionCoordinator m_TransitionCoordinator;
+
+		/// <summary>
 		/// 현재 조정자가 컨트롤러를 처리 중인지 여부 프로퍼티.
 		/// </summary>
 		public bool IsPresentingOrRetracting => m_State == UIPresentationState.Presenting || m_State == UIPresentationState.Retracting;
-
 
 		/// <summary>
 		/// 현재 조정자가 컨트롤러를 처리 중인지 여부 프로퍼티. (짧은 버전)
@@ -77,6 +82,7 @@ namespace Crockhead.Unity.UI
 		{
 			m_Controllers = new LinkedList<UIController>();
 			m_State = UIPresentationState.None;
+			m_TransitionCoordinator = new UITransitionCoordinator();
 		}
 
 		/// <summary>
@@ -90,7 +96,7 @@ namespace Crockhead.Unity.UI
 		/// 표시.
 		/// <para>프레젠테이션 체인에서 가장 뒤에 추가됨.</para>
 		/// </summary>
-		public void Present(UIController controller, bool animated)
+		public async Task Present(UIController controller, bool animated)
 		{
 			if (controller == null)
 				throw new ArgumentNullException(nameof(controller));
@@ -111,17 +117,20 @@ namespace Crockhead.Unity.UI
 			try
 			{
 				// 퇴장.
-				var last = m_Controllers.Last;
-				if (last != null)
-				{
-					last.Value.BeginAppearanceTransition(false, animated);
-					last.Value.EndAppearanceTransition();
-				}
+				//m_Controllers.Last?.Value?.BeginAppearanceTransition(false, animated);
+				//m_Controllers.Last?.Value?.EndAppearanceTransition();
 
 				// 등장.
-				last = m_Controllers.AddLast(controller);
-				last.Value.BeginAppearanceTransition(true, animated);
-				last.Value.EndAppearanceTransition();
+				//controller.BeginAppearanceTransition(true, animated);
+				//controller.EndAppearanceTransition();
+
+				// 트랜지션 처리.
+				var from = m_Controllers.Last?.Value ?? null;
+				var to = controller;
+				await m_TransitionCoordinator.TransitAsync(from, to, animated);
+
+				// 추가.
+				m_Controllers.AddLast(to);
 			}
 			finally
 			{
@@ -134,7 +143,7 @@ namespace Crockhead.Unity.UI
 		/// <para>가장 나중에 열린 객체부터 현재 객체까지 모든 열린 객체는 역순으로 닫힘.</para>
 		/// <para>First 객체는 표시를 중단 할 수 없음.</para>
 		/// </summary>
-		public void Retract(UIController controller, bool animated)
+		public async Task RetractAsync(UIController controller, bool animated)
 		{
 			if (controller == null)
 				throw new ArgumentNullException(nameof(controller));
@@ -176,19 +185,22 @@ namespace Crockhead.Unity.UI
 				// 순회.
 				for (var current = m_Controllers.Last; current != presenting; current = current.Previous)
 				{
-					// 퇴장.
-					current.Value.BeginAppearanceTransition(false, animated);
-					current.Value.EndAppearanceTransition();
+					//// 퇴장.
+					//current.Value.BeginAppearanceTransition(false, animated);
+					//current.Value.EndAppearanceTransition();
+					await m_TransitionCoordinator.TransitAsync(null, current.Value, animated);
 					m_Controllers.Remove(current);
 				}
 
 				// 등장.
-				var last = m_Controllers.Last;
-				if (last != null)
-				{
-					last.Value.BeginAppearanceTransition(true, animated);
-					last.Value.EndAppearanceTransition();
-				}
+				//presenting.Value.BeginAppearanceTransition(true, animated);
+				//presenting.Value.EndAppearanceTransition();
+
+				// 트랜지션 처리.
+				var from = default(UIController);
+				var to = presenting.Value;
+				await m_TransitionCoordinator.TransitAsync(from, to, animated);
+
 			}
 			finally
 			{

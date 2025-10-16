@@ -1,6 +1,8 @@
 using Crockhead.Core;
+using DG.Tweening;
 using System;
-using System.Collections.Generic;
+using System.Collections;
+using System.Threading.Tasks;
 
 
 namespace Crockhead.Unity.UI
@@ -11,28 +13,21 @@ namespace Crockhead.Unity.UI
 	public class UIAnimator : Disposable
 	{
 		/// <summary>
-		/// 대상 뷰.
+		/// 애니메이션.
 		/// </summary>
-		private UIView m_View;
+		private UIAnimation m_Animation;
 
 		/// <summary>
-		/// 이전 프로퍼티 목록.
+		/// 애니메이션 진행 중 여부 프로퍼티.
 		/// </summary>
-		private Dictionary<string, string> m_Previous;
-
-		/// <summary>
-		/// 다음 프로퍼티 목록.
-		/// </summary>
-		private Dictionary<string, string> m_Next;
+		public bool IsPlaying => m_Animation.Sequence.IsPlaying();
 
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		public UIAnimator() : base()
+		public UIAnimator(UIView view) : base()
 		{
-			m_View = null;
-			m_Previous = new Dictionary<string, string>();
-			m_Next = new Dictionary<string, string>();
+			m_Animation = new UIAnimation(view);
 		}
 
 		/// <summary>
@@ -43,41 +38,18 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 프로퍼티 백업.
+		/// 비동기 애니메이션 처리.
 		/// </summary>
-		private void SnapshotProperties(UIView view)
+		public async Task AnimateAsync(float duration, Action action)
 		{
-			m_View = view;
-			m_Previous.Clear();
-			m_Previous.Add("", "");
-		}
+			static IEnumerator Routine(UIAnimation animation)
+			{				
+				yield return animation.Sequence.WaitForCompletion();
+			}
 
-		/// <summary>
-		/// 프로퍼티 변경점 체크.
-		/// </summary>
-		private void CheckDirtyProperties()
-		{
-			m_Next.Clear();
-		}
-
-		/// <summary>
-		/// 변경 될 프로퍼티 목록에 대한 트윈 목록 생성.
-		/// </summary>
-		private void CreateAnimations()
-		{
-		}
-
-		/// <summary>
-		/// 애니메이션 처리.
-		/// </summary>
-		public async void Animate(UIView view, float duration, Action animations)
-		{
-			SnapshotProperties(view);
-			animations?.Invoke();
-			CheckDirtyProperties();
-			CreateAnimations();
-
-			//await Tasks.Wait();
+			m_Animation.Prepare(duration, action);
+			m_Animation.Play();
+			await Tasks.StartForeground(Routine(m_Animation));
 		}
 	}
 }

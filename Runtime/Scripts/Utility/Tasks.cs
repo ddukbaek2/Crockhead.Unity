@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Threading.Tasks;
+using UnityEngine;
 
 
 namespace Crockhead.Unity
@@ -11,12 +12,12 @@ namespace Crockhead.Unity
 	public static class Tasks
 	{
 		/// <summary>
-		/// 코루틴 태스크 실행.
+		/// 코루틴 태스크 실행. (메인 쓰레드 / 엔진 매니지드 타이밍)
 		/// </summary>
 		public static Task StartForeground(IEnumerator routine)
 		{
 			// 코루틴 실행 후 태스크 완료 처리.
-			static IEnumerator InternalExecuteProcess(TaskCompletionSource<bool> taskCompletionSource, IEnumerator routine)
+			static IEnumerator Routine(TaskCompletionSource<bool> taskCompletionSource, IEnumerator routine)
 			{
 				yield return routine;
 				taskCompletionSource.SetResult(true);
@@ -24,12 +25,12 @@ namespace Crockhead.Unity
 			}
 
 			var taskCompletionSource = new TaskCompletionSource<bool>();
-			UnityRunner.Instance.StartCoroutine(InternalExecuteProcess(taskCompletionSource, routine));
+			UnityRunner.Instance.StartCoroutine(Routine(taskCompletionSource, routine));
 			return taskCompletionSource.Task;
 		}
 
 		/// <summary>
-		/// 일반 태스크 실행.
+		/// 일반 태스크 실행. (무작위 백그라운드 쓰레드)
 		/// </summary>
 		public static Task StartBackground(Action action)
 		{
@@ -38,7 +39,7 @@ namespace Crockhead.Unity
 		}
 
 		/// <summary>
-		/// 일반 태스크 실행.
+		/// 일반 태스크 실행. (무작위 백그라운드 쓰레드)
 		/// </summary>
 		public static Task<TResult> StartBackground<TResult>(Func<TResult> action)
 		{

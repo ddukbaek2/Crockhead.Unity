@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -68,6 +69,20 @@ namespace Crockhead.Unity
 			}
 
 			return Coroutines.StartCoroutine(Process(action));
+		}
+
+		/// <summary>
+		/// 태스크 대기.
+		/// </summary>
+		public static Coroutine WaitForTaskCompletion(Task task)
+		{
+			static IEnumerator Routine(Task task)
+			{
+				while (!task.IsCompleted)
+					yield return null;
+			}
+
+			return Coroutines.StartCoroutine(Routine(task));
 		}
 	}
 }

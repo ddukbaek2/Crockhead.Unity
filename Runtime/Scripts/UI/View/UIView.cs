@@ -19,9 +19,19 @@ namespace Crockhead.Unity.UI
 		private RectTransform m_RectTransform;
 
 		/// <summary>
+		/// 캔버스 그룹.
+		/// </summary>
+		private CanvasGroup m_CanvasGroup;
+
+		/// <summary>
 		/// 영역 프로퍼티.
 		/// </summary>
 		public RectTransform RectTransform => m_RectTransform;
+
+		/// <summary>
+		/// 캔버스 그룹 프로퍼티.
+		/// </summary>
+		public CanvasGroup? CanvasGroup => m_CanvasGroup;
 
 		/// <summary>
 		/// 생성됨.
@@ -31,6 +41,7 @@ namespace Crockhead.Unity.UI
 			base.Awake();
 
 			m_RectTransform = GetComponent<RectTransform>();
+			m_CanvasGroup = GetComponent<CanvasGroup>();
 		}
 
 		/// <summary>

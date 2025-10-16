@@ -116,18 +116,14 @@ namespace Crockhead.Unity.UI
 			m_State = UIPresentationState.Presenting;
 			try
 			{
-				// 퇴장.
-				//m_Controllers.Last?.Value?.BeginAppearanceTransition(false, animated);
-				//m_Controllers.Last?.Value?.EndAppearanceTransition();
-
-				// 등장.
-				//controller.BeginAppearanceTransition(true, animated);
-				//controller.EndAppearanceTransition();
-
 				// 트랜지션 처리.
 				var from = m_Controllers.Last?.Value ?? null;
 				var to = controller;
+				from?.BeginAppearanceTransition(false, animated);
+				to?.BeginAppearanceTransition(true, animated);
 				await m_TransitionCoordinator.TransitAsync(from, to, animated);
+				from?.EndAppearanceTransition();
+				to?.EndAppearanceTransition();
 
 				// 추가.
 				m_Controllers.AddLast(to);
@@ -181,25 +177,33 @@ namespace Crockhead.Unity.UI
 			{
 				// 현재 대상을 표시한 객체.
 				var presenting = GetPresenting(controller);
+				var from = default(UIController);
+				var to = default(UIController);
 
-				// 순회.
-				for (var current = m_Controllers.Last; current != presenting; current = current.Previous)
+				// 순회. (목표 대상 직전까지 처리)
+				var current = m_Controllers.Last;
+				while (current.Value != controller)
 				{
-					//// 퇴장.
-					//current.Value.BeginAppearanceTransition(false, animated);
-					//current.Value.EndAppearanceTransition();
-					await m_TransitionCoordinator.TransitAsync(null, current.Value, animated);
+					// 트랜지션 처리.
+					from = current.Value;
+					to = null;
+					from.BeginAppearanceTransition(false, animated);
+					await m_TransitionCoordinator.TransitAsync(from, to, animated);
+					from.EndAppearanceTransition();
+
+					// 제거.
+					current = current.Previous;
 					m_Controllers.Remove(current);
 				}
 
-				// 등장.
-				//presenting.Value.BeginAppearanceTransition(true, animated);
-				//presenting.Value.EndAppearanceTransition();
-
-				// 트랜지션 처리.
-				var from = default(UIController);
-				var to = presenting.Value;
+				// 트랜지션 처리. (목표 대상과 목표 대상 직전의 대상 처리)
+				from = m_Controllers.Last.Value;
+				to = presenting.Value;
+				from.BeginAppearanceTransition(false, animated);
+				to.BeginAppearanceTransition(true, animated);
 				await m_TransitionCoordinator.TransitAsync(from, to, animated);
+				from.EndAppearanceTransition();
+				to.EndAppearanceTransition();
 
 			}
 			finally

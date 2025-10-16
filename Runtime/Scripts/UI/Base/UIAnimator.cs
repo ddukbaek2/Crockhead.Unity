@@ -31,6 +31,14 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
+		/// 생성됨.
+		/// </summary>
+		public UIAnimator(UIAnimation animation) : base()
+		{
+			m_Animation = animation;
+		}
+
+		/// <summary>
 		/// 해제됨.
 		/// </summary>
 		protected override void OnDispose(bool explicitDisposing)
@@ -48,6 +56,20 @@ namespace Crockhead.Unity.UI
 			}
 
 			m_Animation.Prepare(duration, action);
+			m_Animation.Play();
+			await Tasks.StartForeground(Routine(m_Animation));
+		}
+
+		/// <summary>
+		/// 비동기 애니메이션 처리.
+		/// </summary>
+		public async Task AnimateAsync()
+		{
+			static IEnumerator Routine(UIAnimation animation)
+			{
+				yield return animation.Sequence.WaitForCompletion();
+			}
+
 			m_Animation.Play();
 			await Tasks.StartForeground(Routine(m_Animation));
 		}

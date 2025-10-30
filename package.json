@@ -1,8 +1,8 @@
 {
-	"name": "com.crockhead.unity",
+	"name": "com.crockheadstudio.unity",
 	"version": "0.0.2",
-	"displayName": "Crockhead.Unity",
-	"description": "Unity Extension Library",
+	"displayName": "Crockhead for Unity",
+	"description": "Crockhead Unity Extension Library",
 	"unity": "2023.1",
 	"author": {
 		"name": "ddukbaek2",

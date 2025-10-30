@@ -31,7 +31,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 캔버스 그룹 프로퍼티.
 		/// </summary>
-		public CanvasGroup? CanvasGroup => m_CanvasGroup;
+		public CanvasGroup CanvasGroup => m_CanvasGroup;
 
 		/// <summary>
 		/// 생성됨.

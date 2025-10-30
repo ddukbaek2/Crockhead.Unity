@@ -1,11 +1,11 @@
 {
 	"name": "com.crockheadstudio.unity",
-	"version": "0.0.2",
-	"displayName": "Crockhead for Unity",
+	"version": "0.0.3",
+	"displayName": "Crockhead.Unity",
 	"description": "Crockhead Unity Extension Library",
 	"unity": "2023.1",
 	"author": {
-		"name": "ddukbaek2",
+		"name": "Crockhead Studio",
 		"url": "https://github.com/ddukbaek2"
 	},
 	"dependencies": {

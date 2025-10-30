@@ -11,6 +11,39 @@ namespace Crockhead.Unity.Editor
 	public static class Builder
 	{
 		/// <summary>
+		/// 빌드 이름. (앱이름_v버전)
+		/// </summary>
+		public static string BuildName
+		{
+			get
+			{
+				var buildName = $"{Application.productName}_v{Application.version}";
+				return buildName;
+			}
+		}
+
+		/// <summary>
+		/// 빌드 저장 경로.
+		/// </summary>
+		public static string GetLocationPathName(BuildTarget buildTarget)
+		{
+			switch (buildTarget)
+			{
+				case BuildTarget.Android:
+					{
+						var locationPathName = $"Build/{Builder.BuildName}.aab";
+						return locationPathName;
+					}
+
+				default:
+					{
+						var locationPathName = $"Build/{Builder.BuildName}";
+						return locationPathName;
+					}
+			}
+		}
+
+		/// <summary>
 		/// 안드로이드 빌드.
 		/// </summary>
 		public static void BuildForAndroid()
@@ -25,9 +58,9 @@ namespace Crockhead.Unity.Editor
 			}
 
 			var levels = enabledScenes.ToArray();
-			var locationPathName = $"Build/{Application.productName}_v{Application.version}.aab";
 			var buildTarget = BuildTarget.Android;
 			var buildOptions = BuildOptions.None;
+			var locationPathName = Builder.GetLocationPathName(buildTarget);
 			var buildReport = BuildPipeline.BuildPlayer(levels, locationPathName, buildTarget, buildOptions);
 		}
 	}

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Crockhead.Unity.Editor
 {
 	/// <summary>
-	/// 프로젝트 빌드 클래스.
+	/// 프로젝트 애플리케이션 패키징 클래스.
 	/// </summary>
 	public static class Builder
 	{

@@ -5,7 +5,7 @@ using UnityEditor;
 namespace Crockhead.Unity.Editor
 {
 	/// <summary>
-	/// 빌드 에디터.
+	/// 빌드 기능 관련 에디터.
 	/// </summary>
 	public static class BuildEditor
 	{

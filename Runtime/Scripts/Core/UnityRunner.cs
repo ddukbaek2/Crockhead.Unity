@@ -12,31 +12,23 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		protected override void OnCreate()
+		protected override void Awake()
 		{
+			base.Awake();
+
+			if (IsDestroyed())
+				return;
+
 			gameObject.hideFlags = HideFlags.HideAndDontSave;
 			UnityMainThread.Initialize();
 		}
 
 		/// <summary>
-		/// 초기화됨.
+		/// 파괴됨.
 		/// </summary>
-		protected override void OnInitialize()
+		protected override void OnDestroy()
 		{
-		}
-
-		/// <summary>
-		/// 해제됨.
-		/// </summary>
-		protected override void OnDispose(bool explicitDisposing)
-		{
-		}
-
-		/// <summary>
-		/// 갱신됨.
-		/// </summary>
-		private void Update()
-		{
+			base.OnDestroy();
 		}
 	}
 }

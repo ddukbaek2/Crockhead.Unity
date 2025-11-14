@@ -1,16 +1,14 @@
 using Crockhead.Core;
+using Crockhead.Unity;
 using UnityEngine;
-using IDotNetDisposable = System.IDisposable;
 
 
 namespace Crockhead.Unity
 {
 	/// <summary>
 	/// 공유 컴포넌트.
-	/// <para>IDotNetDisposable 인터페이스 구현체.</para>
-	/// <para>IDisposable 인터페이스 구현체.</para>
 	/// </summary>
-	public abstract class SharedComponent<TComponent> : MonoBehaviour, IDisposable where TComponent : SharedComponent<TComponent>
+	public abstract class SharedComponent<TComponent> : MonoBehaviour where TComponent : SharedComponent<TComponent>
 	{
 		/// <summary>
 		/// 생성 되었는지 여부 프로퍼티.
@@ -20,18 +18,17 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 공유 컴포넌트 프로퍼티.
 		/// </summary>
-		public static TComponent Instance => Create();
+		public static TComponent Instance => Create(); // Instance
 
 		/// <summary>
-		/// 해제 되었는지 여부 프로퍼티.
-		/// <para>IDisposable 인터페이스 구현.</para>
+		/// 객체가 파괴 되었는지 여부.
 		/// </summary>
-		bool IDisposable.IsDisposed => this != null && !SharedInstances.IsSet<TComponent>();
+		private bool m_IsDestroyed;
 
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		private void Awake()
+		protected virtual void Awake()
 		{
 			if (SharedInstances.IsSet<TComponent>())
 			{
@@ -41,21 +38,12 @@ namespace Crockhead.Unity
 
 			GameObject.DontDestroyOnLoad(gameObject);
 			SharedInstances.Set<TComponent>((TComponent)this);
-			OnCreate();
-		}
-
-		/// <summary>
-		/// 초기화됨.
-		/// </summary>
-		private void Start()
-		{
-			OnInitialize();			
 		}
 
 		/// <summary>
 		/// 해제됨.
 		/// </summary>
-		private void OnDestroy()
+		protected virtual void OnDestroy()
 		{
 			if (!SharedInstances.IsSet<TComponent>())
 				return;
@@ -65,39 +53,22 @@ namespace Crockhead.Unity
 				return;
 
 			SharedInstances.Unset<TComponent>();
-			OnDispose(false);
 		}
 
 		/// <summary>
-		/// 생성됨.
+		/// 현재 객체가 파괴 되었는지 여부.
 		/// </summary>
-		protected abstract void OnCreate();
-
-		/// <summary>
-		/// 초기화됨.
-		/// </summary>
-		protected abstract void OnInitialize();
-
-		/// <summary>
-		/// 해제됨.
-		/// </summary>
-		protected abstract void OnDispose(bool explicitDisposing);
-
-		/// <summary>
-		/// 해제.
-		/// <para>IDotNetDisposable 인터페이스 구현.</para>
-		/// </summary>
-		void IDotNetDisposable.Dispose()
+		public bool IsDestroyed()
 		{
-			if (!SharedInstances.TryGet<TComponent>(out var sharedInstance))
-				return;
+			if (this == null)
+				return true;
 
-			if (sharedInstance != this)
-				return;
+			if (m_IsDestroyed)
+				return true;
 
-			SharedInstances.Unset<TComponent>();
-			OnDispose(true);
+			return false;
 		}
+
 
 		/// <summary>
 		/// 생성.

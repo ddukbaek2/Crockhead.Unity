@@ -39,13 +39,13 @@ namespace Crockhead.Unity.Editor
 			// 부모 설정.
 			if (parentTransform != null)
 			{
-				Undo.SetTransformParent(obj.transform, parentTransform, "SetParent");
+				Undo.SetTransformParent(obj.transform, parentTransform, "SetTransformParent");
 				obj.gameObject.layer = parentTransform.gameObject.layer;
 			}
 
 			// 트랜스폼 설정.
-			Undo.RecordObject(obj.transform, "SetTransform");
-			obj.transform.ResetTransform();
+			Undo.RecordObject(obj.transform, "ResetTransform");
+			TransformHelper.ResetTransform(obj.transform);
 
 			// 컴포넌트 추가.
 			var component = Undo.AddComponent<TComponent>(obj);

@@ -1,6 +1,6 @@
 {
 	"name": "com.crockheadstudio.unity",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"displayName": "Crockhead.Unity",
 	"description": "Crockhead Unity Extension Library",
 	"unity": "2023.1",

@@ -1,5 +1,5 @@
 //using System.Collections;
-//using System.Threading.Tasks;
+//using System.Threading.TaskHelper;
 //using UnityEngine;
 //using Crockhead.Experimental;
 
@@ -54,7 +54,7 @@
 //		/// </summary>
 //		protected override TComponent OnGenerated()
 //		{
-//			var component = GameObjects.CreateGameObjectWithComponent<TComponent>();
+//			var component = GameObjectHelper.CreateGameObjectWithComponent<TComponent>();
 //			return component;
 //		}
 

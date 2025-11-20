@@ -25,7 +25,7 @@ namespace Crockhead.Unity
 			}
 
 			var taskCompletionSource = new TaskCompletionSource<bool>();
-			UnityRunner.Instance.StartCoroutine(Routine(taskCompletionSource, routine));
+			UnityRuntime.Instance.StartCoroutine(Routine(taskCompletionSource, routine));
 			return taskCompletionSource.Task;
 		}
 

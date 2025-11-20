@@ -16,7 +16,7 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static Coroutine StartCoroutine(IEnumerator routine)
 		{
-			return UnityRunner.Instance.StartCoroutine(routine);
+			return UnityRuntime.Instance.StartCoroutine(routine);
 		}
 
 		/// <summary>
@@ -24,7 +24,7 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static void StopCoroutine(IEnumerator routine)
 		{
-			UnityRunner.Instance.StopCoroutine(routine);
+			UnityRuntime.Instance.StopCoroutine(routine);
 		}
 
 		/// <summary>
@@ -32,7 +32,7 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static void StopCoroutine(Coroutine routine)
 		{
-			UnityRunner.Instance.StopCoroutine(routine);
+			UnityRuntime.Instance.StopCoroutine(routine);
 		}
 
 		/// <summary>
@@ -40,7 +40,7 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static void StopAllCoroutines()
 		{
-			UnityRunner.Instance.StopAllCoroutines();
+			UnityRuntime.Instance.StopAllCoroutines();
 		}
 
 		/// <summary>
@@ -72,7 +72,7 @@ namespace Crockhead.Unity
 		}
 
 		/// <summary>
-		/// 태스크 대기.
+		/// 태스크 완료 대기.
 		/// </summary>
 		public static Coroutine WaitForTaskCompletion(Task task)
 		{
@@ -82,7 +82,22 @@ namespace Crockhead.Unity
 					yield return null;
 			}
 
+			if (task == null)
+				return null;
+
 			return CoroutineHelper.StartCoroutine(Process(task));
+		}
+
+		/// <summary>
+		/// 태스크 완료 대기.
+		/// <para>async Task Func(): WaitForTaskCompletion(Func) ==> 비동기 실행 및 완료 대기. (정상)</para>
+		/// <para>async void Func(): WaitForTaskCompletion(Func) ==> 동일한 함수이나 DOTNET 언어적 제약으로 반환 Task 생성이 없어서 await 체인에 접근 불가. (오류)</para>
+		/// <para>async void 는 이벤트 핸들러를 위해 언어적으로 사용자 대기 할 수 없는 비동기 기능으로 일반 함수로 호출하면 닷넷 런타임 내부에서만 비동기 호출됨.</para>
+		/// </summary>
+		public static Coroutine WaitForTaskCompletion(Func<Task> taskFactory)
+		{
+			var task = taskFactory?.Invoke();
+			return CoroutineHelper.WaitForTaskCompletion(task);
 		}
 	}
 }

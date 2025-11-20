@@ -4,10 +4,10 @@ using UnityEngine;
 namespace Crockhead.Unity
 {
 	/// <summary>
-	/// 유니티 처리기.
+	/// 유니티 실행시간 처리기.
 	/// </summary>
 	[ExecuteAlways]
-	internal class UnityRunner : SharedComponent<UnityRunner>
+	internal class UnityRuntime : SharedComponent<UnityRuntime>
 	{
 		/// <summary>
 		/// 생성됨.
@@ -20,7 +20,7 @@ namespace Crockhead.Unity
 				return;
 
 			gameObject.hideFlags = HideFlags.HideAndDontSave;
-			UnityMainThread.Initialize();
+			UnityThreadDispatcher.Create();
 		}
 
 		/// <summary>

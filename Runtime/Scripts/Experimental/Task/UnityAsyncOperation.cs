@@ -41,7 +41,7 @@ namespace Crockhead.Unity
 
 				if (m_Operation.IsCompleted)
 				{
-					UnityMainThread.Post(continuation);
+					UnityThreadDispatcher.Post(continuation);
 				}
 				else
 				{
@@ -51,7 +51,7 @@ namespace Crockhead.Unity
 				if (m_Operation.IsCompleted)
 				{
 					m_Operation.m_Continuations.Remove(continuation);
-					UnityMainThread.Post(continuation);
+					UnityThreadDispatcher.Post(continuation);
 				}
 			}
 
@@ -116,7 +116,7 @@ namespace Crockhead.Unity
 			var continuations = m_Continuations.ToArray();
 			foreach (var continuation in continuations)
 			{
-				UnityMainThread.Post(continuation);
+				UnityThreadDispatcher.Post(continuation);
 			}
 			m_Continuations.Clear();
 		}

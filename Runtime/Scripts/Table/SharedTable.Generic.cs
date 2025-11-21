@@ -29,37 +29,7 @@ namespace Crockhead.Unity.Table
 		/// </summary>
 		public SharedTable() : base()
 		{
-			m_Collection = null;
-		}
-
-		/// <summary>
-		/// 생성됨.
-		/// </summary>
-		protected override void OnCreate(params object[] arguments)
-		{
-			var tableClassType = typeof(TClass);
-			if (Reflections.TryGetAttribute<AssetPathAttribute>(tableClassType, out var assetPath))
-			{
-				var jsonAssetPath = assetPath.Value;
-				using var reader = new RecordArrayReader<TRecordable>(jsonAssetPath);
-				reader.Read();
-				var records = reader.Records;
-				m_Collection = Table<TRecordable>.Create();
-				m_Collection.AddRange(records);
-				OnLoaded();
-				Debug.Log($"[{tableClassType}] Load Complete. Path: \"{jsonAssetPath}\"");
-			}
-			else
-			{
-				Debug.LogError($"[{tableClassType}] Not Found AssetPath Attribute.");
-			}
-		}
-
-		/// <summary>
-		/// 테이블 로드 됨.
-		/// </summary>
-		protected virtual void OnLoaded()
-		{
+			m_Collection = new Table<TRecordable>();
 		}
 
 		/// <summary>
@@ -70,6 +40,45 @@ namespace Crockhead.Unity.Table
 			Disposables.SafeDispose(ref m_Collection);
 
 			base.OnDispose(explicitDisposing);
+		}
+
+		/// <summary>
+		/// 테이블 로드 전 호출됨.
+		/// </summary>
+		protected virtual void OnTableWillLoad()
+		{
+		}
+
+
+		/// <summary>
+		/// 테이블 로드 됨.
+		/// </summary>
+		protected virtual void OnTableDidLoad()
+		{
+		}
+
+		/// <summary>
+		/// 테이블 로드.
+		/// </summary>
+		public void LoadTable()
+		{
+			OnTableWillLoad();
+			var tableClassType = typeof(TClass);
+			if (Reflections.TryGetAttribute<AssetPathAttribute>(tableClassType, out var assetPath))
+			{
+				var jsonAssetPath = assetPath.Value;
+				using var reader = new RecordArrayReader<TRecordable>(jsonAssetPath);
+				reader.Read();
+				var records = reader.Records;
+				m_Collection = new Table<TRecordable>();
+				m_Collection.AddRange(records);
+				OnTableDidLoad();
+				Debug.Log($"[{tableClassType}] Load Complete. Path: \"{jsonAssetPath}\"");
+			}
+			else
+			{
+				Debug.LogError($"[{tableClassType}] Not Found AssetPath Attribute.");
+			}
 		}
 
 		/// <summary>

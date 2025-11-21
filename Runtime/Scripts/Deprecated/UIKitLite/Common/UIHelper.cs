@@ -117,9 +117,9 @@ namespace Crockhead.Unity.UIKitLite.Deprecated
 		/// </summary>
 		public static GameObject LoadGameObject(string path, AssetPathType type)
 		{
-			using var assetReader = new AssetReader<GameObject>(path, type);
-			assetReader.Read();
-			var asset = assetReader.Result;
+			using var assetLoader = new AssetLoader<GameObject>(path, type);
+			assetLoader.Load();
+			var asset = assetLoader.Asset;
 			if (asset == null)
 				throw new FileNotFoundException(path);
 

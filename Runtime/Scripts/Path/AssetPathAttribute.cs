@@ -49,7 +49,7 @@ namespace Crockhead.Unity
 				{
 					case AssetPathType.Resources:
 						{
-							var value = AssetPaths.GetResourcePath(m_Value);
+							var value = AssetPathHelper.GetResourcePath(m_Value);
 							return value;
 						}
 
@@ -72,7 +72,7 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		public AssetPathAttribute(string path, AssetPathType type, bool enabled = true) : base()
+		public AssetPathAttribute(string path, AssetPathType type = AssetPathType.Resources, bool enabled = true) : base()
 		{
 			m_Type = type;
 			m_Value = path;

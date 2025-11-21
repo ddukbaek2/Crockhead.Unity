@@ -4,7 +4,7 @@ using UnityEngine;
 using Asset = UnityEngine.Object;
 
 
-namespace Crockhead.Unity
+namespace Crockhead.Unity.Deprecated
 {
 	/// <summary>
 	/// 애셋 리더.
@@ -34,21 +34,21 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		public AssetReader(string path, AssetPathType type) : base()
+		public AssetReader(string assetPath, AssetPathType assetPathType) : base()
 		{
-			m_Type = type;
+			m_Type = assetPathType;
 
-			switch (type)
+			switch (assetPathType)
 			{
 				case AssetPathType.Resources:
 					{
-						m_Path = AssetPaths.GetResourcePath(path);
+						m_Path = AssetPathHelper.GetResourcePath(assetPath);
 						break;
 					}
 
 				case AssetPathType.Addressables:
 					{
-						m_Path = path;
+						m_Path = assetPath;
 						break;
 					}
 
@@ -65,14 +65,14 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		public AssetReader(AssetPathAttribute assetPath) : this(assetPath.Value, assetPath.Type)
+		public AssetReader(AssetPathAttribute assetPathAttribute) : this(assetPathAttribute.Value, assetPathAttribute.Type)
 		{
 		}
 
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		public AssetReader(string path) : this(path, AssetPaths.GetInferAssetPathType(path))
+		public AssetReader(string assetPath) : this(assetPath, AssetPathHelper.GetInferAssetPathType(assetPath))
 		{
 		}
 

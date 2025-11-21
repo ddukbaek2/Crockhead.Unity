@@ -9,7 +9,7 @@ namespace Crockhead.Unity
 	/// <summary>
 	/// 애셋 경로 유틸리티.
 	/// </summary>
-	public static class AssetPaths
+	public static class AssetPathHelper
 	{
 		/// <summary>
 		/// 슬래시.
@@ -88,7 +88,7 @@ namespace Crockhead.Unity
 			path = DotNetPath.ChangeExtension(path, null);
 
 			// 경로 구분자를 슬래시로 대체.
-			path = path.Replace(AssetPaths.BackSlash, AssetPaths.Slash);
+			path = path.Replace(AssetPathHelper.BackSlash, AssetPathHelper.Slash);
 
 			// 제거 할 `/Resources/` 까지의 경로 찾기.
 			var match = Regex.Match(path, "(^|/)Resources(/|$)", RegexOptions.IgnoreCase);

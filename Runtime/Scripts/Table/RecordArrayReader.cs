@@ -49,13 +49,13 @@ namespace Crockhead.Unity.Table
 		/// <summary>
 		/// 읽기.
 		/// </summary>
-		private int Read(string assetPath)
+		private int Load(string assetPath)
 		{
 			m_AssetPath = assetPath;
-			using var assetReader = new AssetReader<TextAsset>(assetPath);
-			assetReader.Read();
+			using var assetLoader = new AssetLoader<TextAsset>(assetPath);
+			assetLoader.Load();
 
-			var textAsset = assetReader.Result;
+			var textAsset = assetLoader.Asset;
 			if (textAsset == null)
 			{
 				var type = typeof(TRecordable);
@@ -92,7 +92,7 @@ namespace Crockhead.Unity.Table
 		/// </summary>
 		public int Read()
 		{
-			return Read(m_AssetPath);
+			return Load(m_AssetPath);
 		}
 	}
 }

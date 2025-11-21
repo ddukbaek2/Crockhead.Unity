@@ -14,13 +14,13 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 게임오브젝트 생성.
 		/// </summary>
-		public static GameObject CreateGameObject(string assetPath)
+		public static GameObject CreateFromAsset(string assetPath)
 		{
 			try
 			{
-				using var assetReader = new AssetReader<GameObject>(assetPath);
-				assetReader.Read();
-				var asset = assetReader.Result;
+				using var assetLoader = new AssetLoader<GameObject>(assetPath);
+				assetLoader.Load();
+				var asset = assetLoader.Asset;
 				if (asset == null)
 					throw new NullReferenceException(assetPath);
 
@@ -40,7 +40,7 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 게임오브젝트 + 컴포넌트 생성.
 		/// </summary>
-		public static Component CreateGameObjectWithComponent(Type componentType, AssetPathType assetPathType, string assetPath)
+		public static Component CreateFromAssetWithComponent(Type componentType, AssetPathType assetPathType, string assetPath)
 		{
 			if (!Reflections.IsBaseClass(componentType, typeof(Component)))
 				throw new InvalidCastException(componentType.Name);
@@ -52,7 +52,7 @@ namespace Crockhead.Unity
 			{
 				case AssetPathType.Resources:
 					{
-						gameObject = GameObjectHelper.CreateGameObject(assetPath);
+						gameObject = GameObjectHelper.CreateFromAsset(assetPath);
 						break;
 					}
 
@@ -80,7 +80,7 @@ namespace Crockhead.Unity
 		public static TComponent CreateGameObjectWithComponent<TComponent>(AssetPathType assetPathType, string assetPath) where TComponent : Component
 		{
 			var componentType = typeof(TComponent);
-			var component = GameObjectHelper.CreateGameObjectWithComponent(componentType, assetPathType, assetPath);
+			var component = GameObjectHelper.CreateFromAssetWithComponent(componentType, assetPathType, assetPath);
 			return component as TComponent;
 		}
 
@@ -89,9 +89,9 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static TComponent CreateGameObjectWithComponent<TComponent>(string assetPath) where TComponent : Component
 		{
-			var assetPathType = AssetPaths.GetInferAssetPathType(assetPath);
+			var assetPathType = AssetPathHelper.GetInferAssetPathType(assetPath);
 			var componentType = typeof(TComponent);
-			var component = GameObjectHelper.CreateGameObjectWithComponent(componentType, assetPathType, assetPath);
+			var component = GameObjectHelper.CreateFromAssetWithComponent(componentType, assetPathType, assetPath);
 			return component as TComponent;
 		}
 
@@ -103,7 +103,7 @@ namespace Crockhead.Unity
 			var assetPathType = assetPath.Type;
 			var assetPathValue = assetPath.Value;
 			var componentType = typeof(TComponent);
-			var component = GameObjectHelper.CreateGameObjectWithComponent(componentType, assetPathType, assetPathValue);
+			var component = GameObjectHelper.CreateFromAssetWithComponent(componentType, assetPathType, assetPathValue);
 			return component as TComponent;
 		}
 

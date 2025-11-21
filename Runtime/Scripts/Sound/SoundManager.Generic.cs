@@ -104,9 +104,9 @@ namespace Crockhead.Unity
 		/// </summary>
 		public AudioClip LoadAudioClip(string assetPath, AssetPathType assetPathType)
 		{
-			using var assetReader = new AssetReader<AudioClip>(assetPath, assetPathType);
-			assetReader.Read();
-			var audioClip = assetReader.Result;
+			using var assetLoader = new AssetLoader<AudioClip>(assetPath, assetPathType);
+			assetLoader.Load();
+			var audioClip = assetLoader.Asset;
 			OnAudioClipDidLoad(assetPath, assetPathType, audioClip);
 			return audioClip;
 		}

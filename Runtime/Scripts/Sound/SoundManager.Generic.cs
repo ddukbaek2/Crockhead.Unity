@@ -45,7 +45,7 @@ namespace Crockhead.Unity
 		}
 
 		/// <summary>
-		/// 해제됨.
+		/// 파괴됨.
 		/// </summary>
 		protected override void OnDestroy()
 		{

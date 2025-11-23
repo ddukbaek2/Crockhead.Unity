@@ -12,7 +12,7 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 쓰레드 디스패쳐.
 		/// </summary>
-		private static ThreadDispatcher m_ThreadDispatcher;
+		private static ThreadDispatcher s_ThreadDispatcher;
 
 		/// <summary>
 		/// 생성.
@@ -20,7 +20,7 @@ namespace Crockhead.Unity
 		internal static void Create()
 		{
 			Destroy();
-			m_ThreadDispatcher = new ThreadDispatcher();
+			s_ThreadDispatcher = new ThreadDispatcher();
 		}
 
 		/// <summary>
@@ -28,11 +28,11 @@ namespace Crockhead.Unity
 		/// </summary>
 		internal static void Destroy()
 		{
-			if (m_ThreadDispatcher == null || m_ThreadDispatcher.IsDisposed)
+			if (s_ThreadDispatcher == null || s_ThreadDispatcher.IsDisposed)
 				return;
 
-			Disposables.Dispose(m_ThreadDispatcher);
-			m_ThreadDispatcher = null;
+			Disposables.Dispose(s_ThreadDispatcher);
+			s_ThreadDispatcher = null;
 		}
 
 		/// <summary>
@@ -40,13 +40,13 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static void Post(Action action)
 		{
-			if (m_ThreadDispatcher == null || m_ThreadDispatcher.IsDisposed)
+			if (s_ThreadDispatcher == null || s_ThreadDispatcher.IsDisposed)
 			{
 				action?.Invoke();
 				return;
 			}
 
-			m_ThreadDispatcher.Post(action);
+			s_ThreadDispatcher.Post(action);
 		}
 	}
 }

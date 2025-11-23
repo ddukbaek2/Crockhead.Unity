@@ -1,3 +1,4 @@
+using Crockhead.Core;
 using UnityEngine;
 
 
@@ -20,6 +21,7 @@ namespace Crockhead.Unity
 				return;
 
 			gameObject.hideFlags = HideFlags.HideAndDontSave;
+
 			UnityThreadDispatcher.Create();
 		}
 
@@ -28,6 +30,8 @@ namespace Crockhead.Unity
 		/// </summary>
 		protected override void OnDestroy()
 		{
+			UnityThreadDispatcher.Destroy();
+
 			base.OnDestroy();
 		}
 	}

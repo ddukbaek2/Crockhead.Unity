@@ -28,12 +28,9 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		protected override void Awake()
+		protected override void OnCreate()
 		{
-			base.Awake();
-
-			if (IsDestroyed())
-				return;
+			base.OnCreate();
 
 			m_ActiveSounds = new List<Sound>();
 			m_DeactiveSounds = new Queue<Sound>();
@@ -45,11 +42,11 @@ namespace Crockhead.Unity
 		}
 
 		/// <summary>
-		/// 파괴됨.
+		/// 해제됨.
 		/// </summary>
-		protected override void OnDestroy()
+		protected override void OnDispose()
 		{
-			base.OnDestroy();
+			base.OnDispose();
 		}
 
 		/// <summary>

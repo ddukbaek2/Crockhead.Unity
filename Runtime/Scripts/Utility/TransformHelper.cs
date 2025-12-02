@@ -1,3 +1,4 @@
+using Crockhead.Core;
 using System;
 using UnityEngine;
 
@@ -42,28 +43,37 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 대상 트랜스폼에 대한 컴포넌트 반환 혹은 생성 후 반환.
 		/// </summary>
-		public static TComponent GetOrAddComponent<TComponent>(Transform transform, string transformPath = "") where TComponent : Component
+		public static Component GetOrAddComponent(Type componentType, Transform transform, string transformPath = "")
 		{
+			if (componentType == null)
+				throw new ArgumentNullException(nameof(componentType));
+			if (!Reflections.IsBaseClass(componentType, typeof(Component)))
+				throw new NotSupportedException($"[TransformHelper] Not Supported Type: {componentType}");
 			if (transform == null)
 				throw new ArgumentNullException(nameof(transform));
 
+			// 하위 경로가 없을 경우.
 			if (string.IsNullOrWhiteSpace(transformPath))
 			{
-				var component = transform.GetComponent<TComponent>();
+				var component = transform.GetComponent(componentType);
 				if (component == null)
-					component = transform.gameObject.AddComponent<TComponent>();
+					component = transform.gameObject.AddComponent(componentType);
 				return component;
 			}
+			// 하위 경로가 있을 경우.
 			else
 			{
+				// 기본 경로 검색.
 				var target = transform.Find(transformPath);
 				if (target != null)
 				{
-					var component = target.GetComponent<TComponent>();
+					var component = target.GetComponent(componentType);
 					if (component == null)
-						component = target.gameObject.AddComponent<TComponent>();
+						component = target.gameObject.AddComponent(componentType);
 					return component;
 				}
+				// 수동 각 경로 검색.
+				// 경로가 없으면 무조건 생성.
 				else
 				{
 					var parent = transform;
@@ -84,9 +94,29 @@ namespace Crockhead.Unity
 						parent = target;
 					}
 
-					var component = target.gameObject.AddComponent<TComponent>();
+					var component = target.gameObject.AddComponent(componentType);
 					return component;
 				}
+			}
+		}
+
+		/// <summary>
+		/// 대상 트랜스폼에 대한 컴포넌트 반환 혹은 생성 후 반환.
+		/// </summary>
+		public static TComponent GetOrAddComponent<TComponent>(Transform transform, string transformPath = "") where TComponent : Component
+		{
+			try
+			{
+				var componentType = typeof(TComponent);
+				var component = GetOrAddComponent(componentType, transform, transformPath);
+				if (component == null)
+					return null;
+
+				return component as TComponent;
+			}
+			catch
+			{
+				throw;
 			}
 		}
 	}

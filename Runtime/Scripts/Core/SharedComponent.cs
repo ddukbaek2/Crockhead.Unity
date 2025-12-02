@@ -1,7 +1,5 @@
 using Crockhead.Core;
-using Crockhead.Unity;
 using System;
-using System.Net.Security;
 using UnityEngine;
 
 
@@ -33,9 +31,14 @@ namespace Crockhead.Unity
 		private bool m_IsDestroyed;
 
 		/// <summary>
+		/// 컴포넌트 타입의 이름 프로퍼티.
+		/// </summary>
+		public string ComponentName => typeof(TComponent).Name;
+
+		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		protected virtual void Awake()
+		private void Awake()
 		{
 			if (SharedInstances.IsSet<TComponent>())
 			{
@@ -45,12 +48,21 @@ namespace Crockhead.Unity
 
 			GameObject.DontDestroyOnLoad(gameObject);
 			SharedInstances.Set<TComponent>((TComponent)this);
+			OnCreate();
+		}
+
+		/// <summary>
+		/// 초기화됨.
+		/// </summary>
+		private void Start()
+		{
+			OnInitialize();
 		}
 
 		/// <summary>
 		/// 해제됨.
 		/// </summary>
-		protected virtual void OnDestroy()
+		private void OnDestroy()
 		{
 			if (!SharedInstances.IsSet<TComponent>())
 				return;
@@ -60,6 +72,28 @@ namespace Crockhead.Unity
 				return;
 
 			SharedInstances.Unset<TComponent>();
+			OnDispose();
+		}
+
+		/// <summary>
+		/// 생성됨.
+		/// </summary>
+		protected virtual void OnCreate()
+		{
+		}
+
+		/// <summary>
+		/// 초기화됨.
+		/// </summary>
+		protected virtual void OnInitialize()
+		{
+		}
+
+		/// <summary>
+		/// 해제됨.
+		/// </summary>
+		protected virtual void OnDispose()
+		{
 		}
 
 		/// <summary>
@@ -74,8 +108,7 @@ namespace Crockhead.Unity
 		protected virtual void OnApplicationPause(bool pause)
 		{
 #if UNITY_EDITOR
-			var type = GetType();
-			Debug.Log($"[{type.Name}] OnApplicationPause(pause: {pause})");
+			Debug.Log($"[{ComponentName}] OnApplicationPause(pause: {pause})");
 #endif
 		}
 
@@ -86,8 +119,7 @@ namespace Crockhead.Unity
 		protected virtual void OnApplicationFocus(bool focus)
 		{
 #if UNITY_EDITOR
-			var type = GetType();
-			Debug.Log($"[{type.Name}] OnApplicationFocus(focus: {focus})");
+			Debug.Log($"[{ComponentName}] OnApplicationFocus(focus: {focus})");
 #endif
 		}
 
@@ -97,8 +129,7 @@ namespace Crockhead.Unity
 		protected virtual void OnApplicationQuit()
 		{
 #if UNITY_EDITOR
-			var type = GetType();
-			Debug.Log($"[{type.Name}] OnApplicationQuit()");
+			Debug.Log($"[{ComponentName}] OnApplicationQuit()");
 #endif
 
 			IsApplicationQuitting = true;
@@ -110,8 +141,7 @@ namespace Crockhead.Unity
 		protected virtual void OnLowMemory()
 		{
 #if UNITY_EDITOR
-			var type = GetType();
-			Debug.Log($"[{type.Name}] OnLowMemory()");
+			Debug.Log($"[{ComponentName}] OnLowMemory()");
 #endif
 		}
 
@@ -147,7 +177,8 @@ namespace Crockhead.Unity
 			// 있는걸 사용하는 것은 상관없지만 종료중일때 객체의 신규 생성은 금지.
 			if (IsApplicationQuitting)
 			{
-				throw new InvalidOperationException("[SharedComponent] Cannot create object: the application is quitting.");
+				var type = typeof(TComponent);
+				throw new InvalidOperationException($"[SharedComponent] Cannot create object: the application is quitting. ({type.Name})");
 			}
 
 			sharedInstance = GameObjectHelper.CreateGameObjectWithComponent<TComponent>();

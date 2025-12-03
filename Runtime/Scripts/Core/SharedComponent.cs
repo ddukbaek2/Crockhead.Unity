@@ -107,9 +107,9 @@ namespace Crockhead.Unity
 		/// </summary>
 		protected virtual void OnApplicationPause(bool pause)
 		{
-#if UNITY_EDITOR
-			Debug.Log($"[{ComponentName}] OnApplicationPause(pause: {pause})");
-#endif
+//#if UNITY_EDITOR
+//			Debug.Log($"[{ComponentName}] OnApplicationPause(pause: {pause})");
+//#endif
 		}
 
 		/// <summary>
@@ -118,9 +118,9 @@ namespace Crockhead.Unity
 		/// </summary>
 		protected virtual void OnApplicationFocus(bool focus)
 		{
-#if UNITY_EDITOR
-			Debug.Log($"[{ComponentName}] OnApplicationFocus(focus: {focus})");
-#endif
+//#if UNITY_EDITOR
+//			Debug.Log($"[{ComponentName}] OnApplicationFocus(focus: {focus})");
+//#endif
 		}
 
 		/// <summary>
@@ -128,9 +128,9 @@ namespace Crockhead.Unity
 		/// </summary>
 		protected virtual void OnApplicationQuit()
 		{
-#if UNITY_EDITOR
-			Debug.Log($"[{ComponentName}] OnApplicationQuit()");
-#endif
+//#if UNITY_EDITOR
+//			Debug.Log($"[{ComponentName}] OnApplicationQuit()");
+//#endif
 
 			IsApplicationQuitting = true;
 		}
@@ -140,9 +140,9 @@ namespace Crockhead.Unity
 		/// </summary>
 		protected virtual void OnLowMemory()
 		{
-#if UNITY_EDITOR
-			Debug.Log($"[{ComponentName}] OnLowMemory()");
-#endif
+//#if UNITY_EDITOR
+//			Debug.Log($"[{ComponentName}] OnLowMemory()");
+//#endif
 		}
 
 		/// <summary>
@@ -184,6 +184,17 @@ namespace Crockhead.Unity
 			sharedInstance = GameObjectHelper.CreateGameObjectWithComponent<TComponent>();
 			SharedInstances.Set<TComponent>(sharedInstance);
 			return sharedInstance;
+		}
+
+		/// <summary>
+		/// 해제.
+		/// </summary>
+		public static void Dispose()
+		{
+			if (!IsCreated)
+				return;
+
+			GameObject.Destroy(Instance.gameObject);
 		}
 	}
 }

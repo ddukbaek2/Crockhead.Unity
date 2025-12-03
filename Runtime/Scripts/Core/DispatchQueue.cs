@@ -10,7 +10,7 @@ namespace Crockhead.Unity
 	/// <summary>
 	/// 실행 큐.
 	/// </summary>
-	public class DispatchQueue : SharedClass<DispatchQueue>
+	public class DispatchQueue : Disposable
 	{
 		/// <summary>
 		/// 실행 단위.
@@ -27,8 +27,19 @@ namespace Crockhead.Unity
 			}
 		}
 
+		/// <summary>
+		/// 메인 쓰레드 프로퍼티.
+		/// </summary>
+		public static DispatchQueue Foreground { get; } = new DispatchQueue();
 
+		/// <summary>
+		/// 큐.
+		/// </summary>
 		private Queue<DispatchQueueItem> m_Queue;
+
+		/// <summary>
+		/// 처리 중 여부.
+		/// </summary>
 		private bool m_IsProcessing;
 
 		/// <summary>
@@ -45,7 +56,7 @@ namespace Crockhead.Unity
 		/// </summary>
 		protected override void OnDispose(bool explicitDisposing)
 		{
-			base.OnDispose(explicitDisposing);
+			//base.OnDispose(explicitDisposing);
 		}
 
 		/// <summary>

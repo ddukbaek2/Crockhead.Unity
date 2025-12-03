@@ -8,7 +8,7 @@ namespace Crockhead.Unity.Editor
 	/// 하이어라키 확장.
 	/// <para>다음의 특성을 메서드에 추가. [MenuItem("GameObject/Crockhead/{명령어}")]</para>
 	/// </summary>
-	public class HierarchyExtensions
+	public class HierarchyExtension
 	{
 		/// <summary>
 		/// 컨텍스트 혹은 셀렉션으로부터 트랜스폼 반환.

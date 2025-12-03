@@ -2,7 +2,9 @@
 	"name": "Crockhead.Unity.Editor",
 	"rootNamespace": "Crockhead.Unity.Editor",
 	"references": [
-		"Crockhead.Unity"
+		"Crockhead.Unity",
+		"Unity.TextMeshPro",
+		"Unity.TextMeshPro.Editor"
 	],
 	"includePlatforms": [
 		"Editor"

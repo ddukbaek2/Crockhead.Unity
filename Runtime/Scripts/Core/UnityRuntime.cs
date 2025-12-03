@@ -1,4 +1,3 @@
-using Crockhead.Core;
 using UnityEngine;
 
 
@@ -17,7 +16,7 @@ namespace Crockhead.Unity
 		{
 			base.OnCreate();
 
-			gameObject.hideFlags = HideFlags.HideAndDontSave;
+			//gameObject.hideFlags = HideFlags.HideAndDontSave;
 			UnityThreadDispatcher.Create();
 		}
 

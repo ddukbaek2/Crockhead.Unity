@@ -148,12 +148,12 @@ namespace Crockhead.Unity.UI
 				// 경로가 없다면 생성.
 				if (string.IsNullOrWhiteSpace(assetPath))
 				{
-					m_View = UIView.CreateView(viewType, parentRectTransform);
+					m_View = (UIView)UIView.Create(viewType, parentRectTransform);
 				}
 				// 경로가 있다면 로드.
 				else
 				{
-					m_View = UIView.CreateViewFromAsset(viewType, assetPath, assetPathType, parentRectTransform);
+					m_View = (UIView)UIView.CreateFromAsset(viewType, assetPath, assetPathType, parentRectTransform);
 				}
 
 				m_View.SetController(this);
@@ -192,12 +192,12 @@ namespace Crockhead.Unity.UI
 		//	//		viewType = viewBindingAttribute.ViewType;
 		//	//	}
 
-		//	//	m_RootView = UIView.CreateFromAsset(viewType, assetPath, AssetPathType.Resources, m_Window.RectTransform);
+		//	//	m_RootView = UIView.CreateFromAttribute(viewType, assetPath, AssetPathType.Resources, m_Window.RectTransform);
 		//	//}
 		//	//else
 		//	//{
 		//	//	// 기본 뷰 생성.
-		//	//	m_RootView = UIView.CreateFromAsset(viewType, m_Window.RectTransform);
+		//	//	m_RootView = UIView.CreateFromAttribute(viewType, m_Window.RectTransform);
 		//	//}
 
 		//	OnRootViewDidLoad();

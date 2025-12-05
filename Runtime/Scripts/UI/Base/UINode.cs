@@ -307,16 +307,6 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 자식 트랜스폼에 대한 컴포넌트 반환 혹은 생성 후 반환.
 		/// </summary>
-		public Component GetOrAddComponent(Type componentType, string transformPath)
-		{
-			//var component = TransformHelper.GetOrAddComponent(transform, transformPath);
-			//return component;
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// 자식 트랜스폼에 대한 컴포넌트 반환 혹은 생성 후 반환.
-		/// </summary>
 		public TComponent GetOrAddComponent<TComponent>() where TComponent : Component
 		{
 			var component = GetOrAddComponent<TComponent>(string.Empty);
@@ -333,28 +323,27 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 노드 생성.
-		/// </summary>
-		public static UINode Create(Type nodeType, Transform parentTransform)
+		/// 생성.
+		/// </ummary>
+		public static UINode Create(Type nodeType, Transform parentTransform = null)
 		{
 			if (nodeType == null)
 				throw new ArgumentNullException(nameof(nodeType));
-			if (parentTransform == null)
-				throw new ArgumentNullException(nameof(parentTransform));
 			if (!Reflections.IsBaseClass(nodeType, typeof(UINode)))
 				throw new ArgumentException(nameof(nodeType));
 
-			var obj = new GameObject(nodeType.Name);
-			var node = (UINode)obj.AddComponent(nodeType);
-			node.transform.SetParent(parentTransform, true);
-			TransformHelper.ResetTransform(node.transform);
+			var obj = InstantiationHelper.Create(nodeType.Name, null, parentTransform);
+			var node = (UINode)obj.GetOrAddComponent(nodeType);
+			if (parentTransform != null)
+				node.transform.SetParent(parentTransform, true);
+			TransformHelper.ResetRectTransform(node.RectTransform);
 			return node;
 		}
 
 		/// <summary>
-		/// 애셋을 로드하여 노드 생성.
+		/// 애셋을 로드하여 생성.
 		/// </summary>
-		public static UINode CreateFromAsset(Type nodeType, string assetPath, AssetPathType assetPathType, Transform parentTransform)
+		public static UINode CreateFromAsset(Type nodeType, string assetPath, AssetPathType assetPathType = AssetPathType.Resources, Transform parentTransform = null)
 		{
 			try
 			{
@@ -362,39 +351,28 @@ namespace Crockhead.Unity.UI
 					throw new ArgumentNullException(nameof(nodeType));
 				if (string.IsNullOrWhiteSpace(assetPath))
 					throw new ArgumentException(nameof(assetPath));
-				if (parentTransform == null)
-					throw new ArgumentNullException(nameof(parentTransform));
 				if (!Reflections.IsBaseClass(nodeType, typeof(UINode)))
 					throw new ArgumentException(nameof(nodeType));
 
-				using var assetLoader = new AssetLoader<GameObject>(assetPath, assetPathType);
-				assetLoader.Load();
-				var asset = assetLoader.Asset;
-				var obj = GameObject.Instantiate<GameObject>(asset);
-				obj.name = nodeType.Name;
+				var obj = InstantiationHelper.CreateFromAsset(assetPath, assetPathType, null, parentTransform);
 				var node = (UINode)obj.GetOrAddComponent(nodeType);
-				node.transform.SetParent(parentTransform, true);
-				TransformHelper.ResetTransform(node.transform);
+				if (parentTransform != null)
+					node.transform.SetParent(parentTransform, true);
+				TransformHelper.ResetRectTransform(node.RectTransform);
 				return node;
 			}
 			catch
 			{
-				Debug.LogError($"[UINode] {assetPath}");
 				throw;
 			}
 		}
-
 		/// <summary>
-		/// 애셋을 로드하여 노드 생성. (특성이 설정 된 경우)
+		/// 특성에서 애셋을 로드하여 생성.
 		/// </summary>
-		public static UINode CreateFromAsset(Type nodeType, Transform parentTransform)
+		public static UINode CreateFromAttribute(Type nodeType, Transform parentTransform = null)
 		{
 			try
 			{
-				if (nodeType == null)
-					throw new ArgumentNullException(nameof(nodeType));
-				if (parentTransform == null)
-					throw new ArgumentNullException(nameof(parentTransform));
 				if (!Reflections.TryGetAttribute<AssetPathAttribute>(nodeType, out var assetPathAttribute))
 					throw new InvalidOperationException(nameof(nodeType));
 
@@ -409,9 +387,9 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 노드 생성.
+		/// 생성.
 		/// </summary>
-		public static TUINode Create<TUINode>(Transform parentTransform) where TUINode : UINode
+		public static TUINode Create<TUINode>(Transform parentTransform = null) where TUINode : UINode
 		{
 			try
 			{
@@ -426,9 +404,9 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 애셋을 로드하여 노드 생성.
+		/// 애셋을 로드하여 생성.
 		/// </summary>
-		public static TUINode CreateFromAsset<TUINode>(string assetPath, AssetPathType assetPathType, Transform parentTransform) where TUINode : UINode
+		public static TUINode CreateFromAsset<TUINode>(string assetPath, AssetPathType assetPathType = AssetPathType.Resources, Transform parentTransform = null) where TUINode : UINode
 		{
 			try
 			{
@@ -443,14 +421,14 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 애셋을 로드하여 노드 생성. (특성이 설정 된 경우)
+		/// 특성에서 애셋을 로드하여 생성.
 		/// </summary>
-		public static TUINode CreateFromAsset<TUINode>(Transform parentTransform) where TUINode : UINode
+		public static TUINode CreateFromAttribute<TUINode>(Transform parentTransform = null) where TUINode : UINode
 		{
 			try
 			{
 				var nodeType = typeof(TUINode);
-				var node = (TUINode)UINode.CreateFromAsset(nodeType, parentTransform);
+				var node = (TUINode)UINode.CreateFromAttribute(nodeType, parentTransform);
 				return node;
 			}
 			catch

@@ -54,7 +54,7 @@
 //		/// </summary>
 //		protected override TComponent OnGenerated()
 //		{
-//			var component = GameObjectHelper.CreateFromAssetWithComponent<TComponent>();
+//			var component = InstantiationHelper.CreateFromAssetWithComponent<TComponent>();
 //			return component;
 //		}
 

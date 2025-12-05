@@ -43,7 +43,23 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 대상 트랜스폼에 대한 컴포넌트 반환 혹은 생성 후 반환.
 		/// </summary>
-		public static Component GetOrAddComponent(Type componentType, Transform transform, string transformPath = "")
+		public static Component GetOrAddComponent(this Transform transform, Type componentType)
+		{
+			try
+			{
+				var component = TransformHelper.GetOrAddComponent(transform, string.Empty, componentType);
+				return component;
+			}
+			catch
+			{
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// 대상 트랜스폼에 대한 컴포넌트 반환 혹은 생성 후 반환.
+		/// </summary>
+		public static Component GetOrAddComponent(this Transform transform, string transformPath, Type componentType)
 		{
 			if (componentType == null)
 				throw new ArgumentNullException(nameof(componentType));
@@ -57,7 +73,7 @@ namespace Crockhead.Unity
 			{
 				var component = transform.GetComponent(componentType);
 				if (component == null)
-					component = transform.gameObject.AddComponent(componentType);
+					component = InstantiationHelper.GetOrAddComponent(transform.gameObject, componentType);
 				return component;
 			}
 			// 하위 경로가 있을 경우.
@@ -69,7 +85,7 @@ namespace Crockhead.Unity
 				{
 					var component = target.GetComponent(componentType);
 					if (component == null)
-						component = target.gameObject.AddComponent(componentType);
+						component = InstantiationHelper.GetOrAddComponent(target.gameObject, componentType);
 					return component;
 				}
 				// 수동 각 경로 검색.
@@ -86,15 +102,13 @@ namespace Crockhead.Unity
 							var obj = new GameObject(transformName);
 							target = obj.transform;
 							target.SetParent(parent, true);
-							target.localPosition = Vector3.zero;
-							target.localScale = Vector3.one;
-							target.localRotation = Quaternion.identity;
+							TransformHelper.ResetTransform(target);
 						}
 
 						parent = target;
 					}
 
-					var component = target.gameObject.AddComponent(componentType);
+					var component = InstantiationHelper.GetOrAddComponent(target.gameObject, componentType);
 					return component;
 				}
 			}
@@ -103,12 +117,28 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 대상 트랜스폼에 대한 컴포넌트 반환 혹은 생성 후 반환.
 		/// </summary>
-		public static TComponent GetOrAddComponent<TComponent>(Transform transform, string transformPath = "") where TComponent : Component
+		public static TComponent GetOrAddComponent<TComponent>(this Transform transform) where TComponent : Component
+		{
+			try
+			{
+				var component = TransformHelper.GetOrAddComponent<TComponent>(transform, string.Empty);
+				return component;
+			}
+			catch
+			{
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// 대상 트랜스폼에 대한 컴포넌트 반환 혹은 생성 후 반환.
+		/// </summary>
+		public static TComponent GetOrAddComponent<TComponent>(this Transform transform, string transformPath) where TComponent : Component
 		{
 			try
 			{
 				var componentType = typeof(TComponent);
-				var component = GetOrAddComponent(componentType, transform, transformPath);
+				var component = TransformHelper.GetOrAddComponent(transform, transformPath, componentType);
 				if (component == null)
 					return null;
 

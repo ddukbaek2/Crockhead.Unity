@@ -57,6 +57,9 @@ namespace Crockhead.Unity
 		/// </summary>
 		public AssetLoader(string assetPath, AssetPathType assetPathType) : base()
 		{
+			if (string.IsNullOrWhiteSpace(assetPath))
+				throw new ArgumentNullException(nameof(assetPath));
+
 			m_Asset = null;
 			m_AssetPathType = assetPathType;
 

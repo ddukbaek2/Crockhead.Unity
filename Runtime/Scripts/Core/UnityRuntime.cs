@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Crockhead.Unity
 {
 	/// <summary>
-	/// 유니티 실행시간 처리기.
+	/// 유니티 런타임 처리기.
 	/// </summary>
 	[ExecuteAlways]
 	internal class UnityRuntime : SharedComponent<UnityRuntime>

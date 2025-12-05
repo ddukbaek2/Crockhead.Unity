@@ -26,14 +26,9 @@ namespace Crockhead.Unity
 		public static TComponent Instance => Create(); // Instance
 
 		/// <summary>
-		/// 객체가 파괴 되었는지 여부.
-		/// </summary>
-		private bool m_IsDestroyed;
-
-		/// <summary>
 		/// 컴포넌트 타입의 이름 프로퍼티.
 		/// </summary>
-		public string ComponentName => typeof(TComponent).Name;
+		public static string ComponentName => typeof(TComponent).Name;
 
 		/// <summary>
 		/// 생성됨.
@@ -152,10 +147,6 @@ namespace Crockhead.Unity
 		{
 			if (this == null)
 				return true;
-
-			if (m_IsDestroyed)
-				return true;
-
 			return false;
 		}
 
@@ -181,7 +172,8 @@ namespace Crockhead.Unity
 				throw new InvalidOperationException($"[SharedComponent] Cannot create object: the application is quitting. ({type.Name})");
 			}
 
-			sharedInstance = GameObjectHelper.CreateGameObjectWithComponent<TComponent>();
+			var obj = InstantiationHelper.CreateFromAttribute<TComponent>();
+			sharedInstance = obj.GetOrAddComponent<TComponent>();
 			SharedInstances.Set<TComponent>(sharedInstance);
 			return sharedInstance;
 		}
@@ -191,10 +183,10 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static void Dispose()
 		{
-			if (!IsCreated)
+			if (!SharedInstances.TryGet<TComponent>(out var sharedInstance))
 				return;
 
-			GameObject.Destroy(Instance.gameObject);
+			GameObject.Destroy(sharedInstance.gameObject);
 		}
 	}
 }

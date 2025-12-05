@@ -114,7 +114,9 @@ namespace Crockhead.Unity.Deprecated
 				return sharedInstance;
 			}
 
-			sharedInstance = GameObjectHelper.CreateGameObjectWithComponent<TComponent>();
+			
+			var obj = InstantiationHelper.CreateFromAttribute<TComponent>();
+			sharedInstance = obj.GetOrAddComponent<TComponent>();
 			SharedInstances.Set<TComponent>(sharedInstance);
 			return sharedInstance;
 		}

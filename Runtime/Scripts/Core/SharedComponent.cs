@@ -166,13 +166,16 @@ namespace Crockhead.Unity
 			}
 
 			// 있는걸 사용하는 것은 상관없지만 종료중일때 객체의 신규 생성은 금지.
+			var componentType = typeof(TComponent);
 			if (IsApplicationQuitting)
 			{
-				var type = typeof(TComponent);
-				throw new InvalidOperationException($"[SharedComponent] Cannot create object: the application is quitting. ({type.Name})");
+				throw new InvalidOperationException($"[SharedComponent] Cannot create object: the application is quitting. ({componentType.Name})");
 			}
 
-			var obj = InstantiationHelper.CreateFromAttribute<TComponent>();
+			var obj = InstantiationHelper.CreateFromAttribute(componentType);
+			if (obj == null)
+				obj = InstantiationHelper.Create(componentType.Name);
+
 			sharedInstance = obj.GetOrAddComponent<TComponent>();
 			SharedInstances.Set<TComponent>(sharedInstance);
 			return sharedInstance;

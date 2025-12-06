@@ -19,9 +19,9 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 해제됨.
 		/// </summary>
-		protected override void OnDispose(bool explicitDisposing)
+		protected override void OnDispose()
 		{
-			base.OnDispose(explicitDisposing);
+			base.OnDispose();
 		}
 
 		/// <summary>

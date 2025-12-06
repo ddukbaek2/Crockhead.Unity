@@ -1,3 +1,4 @@
+using Crockhead.Core;
 using System;
 
 
@@ -6,7 +7,7 @@ namespace Crockhead.Unity
 	/// <summary>
 	/// 연결된 애셋 경로를 수식하는 특성.
 	/// </summary>
-	public class AssetPathAttribute : Attribute
+	public class AssetPathAttribute : FilePathAttribute
 	{
 		/// <summary>
 		/// 타입.
@@ -14,29 +15,9 @@ namespace Crockhead.Unity
 		private AssetPathType m_Type;
 
 		/// <summary>
-		/// 값.
-		/// </summary>
-		private string m_Value;
-
-		/// <summary>
-		/// 사용 여부.
-		/// </summary>
-		private bool m_IsEnabled;
-
-		/// <summary>
 		/// 타입 프로퍼티.
 		/// </summary>
 		public AssetPathType Type => m_Type;
-
-		/// <summary>
-		/// 값 프로퍼티.
-		/// </summary>
-		public string Value => m_Value;
-
-		/// <summary>
-		/// 사용 여부 프로퍼티.
-		/// </summary>
-		public bool IsEnabled => m_IsEnabled;
 
 		/// <summary>
 		/// 경로 프로퍼티.
@@ -49,14 +30,14 @@ namespace Crockhead.Unity
 				{
 					case AssetPathType.Resources:
 						{
-							var value = AssetPathHelper.GetResourcePath(m_Value);
+							var value = AssetPathHelper.GetResourcePath(Value);
 							return value;
 						}
 
 					case AssetPathType.Addressables:
 						{
 							// 저장한 그대로.
-							var value = m_Value;
+							var value = Value;
 							return value;
 						}
 
@@ -72,11 +53,17 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		public AssetPathAttribute(string path, AssetPathType type = AssetPathType.Resources, bool enabled = true) : base()
+		public AssetPathAttribute(string path, AssetPathType type, bool enabled) : base(path, enabled)
 		{
 			m_Type = type;
-			m_Value = path;
-			m_IsEnabled = enabled;
+		}
+
+		/// <summary>
+		/// 생성됨.
+		/// </summary>
+		public AssetPathAttribute(string path, AssetPathType type) : this(path, type, true)
+		{
+			m_Type = type;
 		}
 	}
 }

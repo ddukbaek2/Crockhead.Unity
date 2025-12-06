@@ -12,6 +12,21 @@ namespace Crockhead.Unity
 	public static class TaskHelper
 	{
 		/// <summary>
+		/// 유니티 비동기 대기 객체를 태스크로 변환.
+		/// </summary>
+		public static Task StartTask(AsyncOperation asyncOperation)
+		{
+			var taskCompletionSource = new TaskCompletionSource<bool>();
+			void Completed(AsyncOperation asyncOperation)
+			{
+				taskCompletionSource.SetResult(true);
+			}
+
+			asyncOperation.completed += Completed;
+			return taskCompletionSource.Task;
+		}
+
+		/// <summary>
 		/// 코루틴 태스크 실행. (메인 쓰레드 / 엔진 매니지드 타이밍)
 		/// </summary>
 		public static Task StartForeground(IEnumerator routine)

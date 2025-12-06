@@ -59,10 +59,9 @@ namespace Crockhead.Unity
 		/// </summary>
 		private void OnDestroy()
 		{
-			if (!SharedInstances.IsSet<TComponent>())
+			if (!SharedInstances.TryGet<TComponent>(out var sharedInstance))
 				return;
 
-			var sharedInstance = SharedInstances.Get<TComponent>();
 			if (sharedInstance != this)
 				return;
 

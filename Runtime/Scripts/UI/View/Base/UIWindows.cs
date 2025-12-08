@@ -81,6 +81,9 @@ namespace Crockhead.Unity.UI
 			if (m_Windows.Contains(window))
 				return false;
 
+			if (!window.didAwake)
+				return false;
+
 			var topWindow = TopWindow;
 			if (topWindow != null)
 			{

@@ -8,6 +8,7 @@ namespace Crockhead.Unity.UI
 	/// <summary>
 	/// 화면 영역 단위 구분 객체.
 	/// </summary>
+	[RequireComponent(typeof(Canvas))]
 	public class UIWindow : UINode, IUIView
 	{
 		#region INSPECTOR

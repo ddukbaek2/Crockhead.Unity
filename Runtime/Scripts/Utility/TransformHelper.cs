@@ -1,4 +1,5 @@
 using Crockhead.Core;
+using Crockhead.Unity.Exceptions;
 using System;
 using UnityEngine;
 
@@ -61,10 +62,26 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static Component GetOrAddComponent(this Transform transform, string transformPath, Type componentType)
 		{
+			try
+			{
+				var component = TransformHelper.GetOrAddComponent(transform, transformPath, componentType, true);
+				return component;
+			}
+			catch
+			{
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// 대상 트랜스폼에 대한 컴포넌트 반환 혹은 생성 후 반환.
+		/// </summary>
+		public static Component GetOrAddComponent(this Transform transform, string transformPath, Type componentType, bool makeChildren)
+		{
 			if (componentType == null)
 				throw new ArgumentNullException(nameof(componentType));
 			if (!Reflections.IsBaseClass(componentType, typeof(Component)))
-				throw new NotSupportedException($"[TransformHelper] Not Supported Type: {componentType}");
+				throw new NotSupportedException($"Not Component Type: {componentType}");
 			if (transform == null)
 				throw new ArgumentNullException(nameof(transform));
 
@@ -79,7 +96,7 @@ namespace Crockhead.Unity
 			// 하위 경로가 있을 경우.
 			else
 			{
-				// 기본 경로 검색.
+				// 기본 경로 탐색.
 				var target = transform.Find(transformPath);
 				if (target != null)
 				{
@@ -88,10 +105,9 @@ namespace Crockhead.Unity
 						component = InstantiationHelper.GetOrAddComponent(target.gameObject, componentType);
 					return component;
 				}
-				// 수동 각 경로 검색.
-				// 경로가 없으면 무조건 생성.
 				else
 				{
+					// 수동으로 각 하위 노드를 순회하여 경로 탐색.
 					var parent = transform;
 					var transformNames = transformPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
 					foreach (var transformName in transformNames)
@@ -99,10 +115,19 @@ namespace Crockhead.Unity
 						target = parent.Find(transformName);
 						if (target == null)
 						{
-							var obj = new GameObject(transformName);
-							target = obj.transform;
-							target.SetParent(parent, true);
-							TransformHelper.ResetTransform(target);
+							// 경로 생성.
+							if (makeChildren)
+							{
+								var obj = new GameObject(transformName);
+								target = obj.transform;
+								target.SetParent(parent, true);
+								TransformHelper.ResetTransform(target);
+							}							
+							else
+							{
+								// 실패처리.
+								throw new NotFoundTransformException(transform, transformPath);
+							}
 						}
 
 						parent = target;
@@ -137,8 +162,24 @@ namespace Crockhead.Unity
 		{
 			try
 			{
+				var component = TransformHelper.GetOrAddComponent<TComponent>(transform, transformPath, true);
+				return component;
+			}
+			catch
+			{
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// 대상 트랜스폼에 대한 컴포넌트 반환 혹은 생성 후 반환.
+		/// </summary>
+		public static TComponent GetOrAddComponent<TComponent>(this Transform transform, string transformPath, bool makeChildren) where TComponent : Component
+		{
+			try
+			{
 				var componentType = typeof(TComponent);
-				var component = TransformHelper.GetOrAddComponent(transform, transformPath, componentType);
+				var component = TransformHelper.GetOrAddComponent(transform, transformPath, componentType, makeChildren);
 				if (component == null)
 					return null;
 

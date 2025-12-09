@@ -1,3 +1,4 @@
+using Crockhead.Core;
 using UnityEngine;
 
 
@@ -7,8 +8,18 @@ namespace Crockhead.Unity
 	/// 유니티 런타임 처리기.
 	/// </summary>
 	[ExecuteAlways]
-	internal class UnityRuntime : SharedComponent<UnityRuntime>
+	public class UnityRuntime : SharedComponent<UnityRuntime>
 	{
+		/// <summary>
+		/// 스케쥴러.
+		/// </summary>
+		private Scheduler m_Scheduler;
+
+		/// <summary>
+		/// 스케쥴러 프로퍼티.
+		/// </summary>
+		public Scheduler Scheduler => m_Scheduler;
+
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
@@ -18,6 +29,8 @@ namespace Crockhead.Unity
 
 			//gameObject.hideFlags = HideFlags.HideAndDontSave;
 			UnityThreadDispatcher.Create();
+			DispatchQueue.Foreground = new DispatchQueue();
+			m_Scheduler = new Scheduler();
 		}
 
 		/// <summary>
@@ -26,6 +39,7 @@ namespace Crockhead.Unity
 		protected override void OnDispose()
 		{
 			UnityThreadDispatcher.Destroy();
+			Disposables.Dispose(m_Scheduler);
 
 			base.OnDispose();
 		}

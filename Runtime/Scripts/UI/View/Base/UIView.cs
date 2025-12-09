@@ -187,28 +187,28 @@ namespace Crockhead.Unity.UI
 		//	}
 		//}
 
-		/// <summary>
-		/// 부모 뷰의 렉트 트랜스폼을 반환. (부모뷰가 없다면 윈도우)
-		/// </summary>
-		public RectTransform GetSuperviewRectTransform()
-		{
-			var superview = Window.GetComponentInParent<UIView>();
-			if (superview == null)
-			{
-				if (Window == null)
-				{
-					return null;
-				}
-				else
-				{
-					return Window.RectTransform;
-				}
-			}
-			else
-			{
-				return superview.RectTransform;
-			}
-		}
+		///// <summary>
+		///// 부모 뷰의 렉트 트랜스폼을 반환. (부모뷰가 없다면 윈도우)
+		///// </summary>
+		//public RectTransform GetSuperviewRectTransform()
+		//{
+		//	var superview = Window.GetComponentInParent<UIView>();
+		//	if (superview == null)
+		//	{
+		//		if (Window == null)
+		//		{
+		//			return null;
+		//		}
+		//		else
+		//		{
+		//			return Window.RectTransform;
+		//		}
+		//	}
+		//	else
+		//	{
+		//		return superview.RectTransform;
+		//	}
+		//}
 
 		/// <summary>
 		/// 현재 게임 오브젝트에 다른 뷰가 붙어있는지 확인.

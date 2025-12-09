@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine;
 
 
 namespace Crockhead.Unity
@@ -19,18 +20,31 @@ namespace Crockhead.Unity
 		{
 			public Func<Task> TaskFactory { get; }
 			public TaskCompletionSource<bool> TaskCompletionSource { get; }
+			public int StartFrame { get; }
 
-			public DispatchQueueItem(Func<Task> task)
+			/// <summary>
+			/// 생성됨.
+			/// </summary>
+			public DispatchQueueItem(Func<Task> task, int delayFrame = 0)
 			{
 				TaskFactory = task;
 				TaskCompletionSource = new TaskCompletionSource<bool>();
+
+				if (delayFrame < 1)
+				{
+					StartFrame = -1;
+				}
+				else
+				{
+					StartFrame = Time.frameCount + delayFrame;
+				}
 			}
 		}
 
 		/// <summary>
-		/// 메인 쓰레드 프로퍼티.
+		/// 메인 쓰레드 프로퍼티. (첫 호출을 Unity Runtime 컴포넌트 내부에서 진행)
 		/// </summary>
-		public static DispatchQueue Foreground { get; } = new DispatchQueue();
+		public static DispatchQueue Foreground { internal set; get; } = null;
 
 		/// <summary>
 		/// 큐.
@@ -71,6 +85,14 @@ namespace Crockhead.Unity
 				var item = m_Queue.Dequeue();
 				var failure = default(Exception);
 				var task = default(Task);
+
+				// 프레임 대기 사용.
+				if (item.StartFrame > 0)
+				{
+					// 현재 프레임 < 실행 프레임.
+					while (Time.frameCount < item.StartFrame)
+						yield return null;
+				}
 
 				try
 				{
@@ -119,9 +141,9 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 실행.
 		/// </summary>
-		public Task RunAsync(Func<Task> task)
+		public Task RunAsync(Func<Task> task, int delayFrame)
 		{
-			var work = new DispatchQueueItem(task);
+			var work = new DispatchQueueItem(task, delayFrame);
 			m_Queue.Enqueue(work);
 
 			if (!m_IsProcessing)
@@ -134,7 +156,15 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 실행.
 		/// </summary>
-		public Task RunAsync(Action action)
+		public Task RunAsync(Func<Task> task)
+		{
+			return RunAsync(task, 0);
+		}
+
+		/// <summary>
+		/// 실행.
+		/// </summary>
+		public Task RunAsync(Action action, int delayFrame)
 		{
 			if (action == null)
 				throw new ArgumentNullException(nameof(action));
@@ -143,7 +173,30 @@ namespace Crockhead.Unity
 			{
 				action.Invoke();
 				return Task.CompletedTask;
-			});
+			}, delayFrame);
+		}
+
+		/// <summary>
+		/// 실행.
+		/// </summary>
+		public Task RunAsync(Action action)
+		{
+			return RunAsync(action, 0);
+		}
+
+		/// <summary>
+		/// 실행.
+		/// </summary>
+		public Task RunNextFrameAsync(Action action)
+		{
+			if (action == null)
+				throw new ArgumentNullException(nameof(action));
+
+			return RunAsync(() =>
+			{
+				action.Invoke();
+				return Task.CompletedTask;
+			}, 1);
 		}
 	}
 }

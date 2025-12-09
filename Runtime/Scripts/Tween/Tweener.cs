@@ -171,7 +171,7 @@
 //		/// <summary>
 //		/// 업데이트.
 //		/// </summary>
-//		public void Update(float timeDelta)
+//		public void OnUpdate(float timeDelta)
 //		{
 //			if (!m_IsPlaying)
 //				return;

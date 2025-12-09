@@ -1,5 +1,6 @@
 using Crockhead.Core;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -366,6 +367,7 @@ namespace Crockhead.Unity.UI
 				throw;
 			}
 		}
+
 		/// <summary>
 		/// 특성에서 애셋을 로드하여 생성.
 		/// </summary>
@@ -379,6 +381,54 @@ namespace Crockhead.Unity.UI
 				var assetPathValue = assetPathAttribute.Value;
 				var assetPathType = assetPathAttribute.Type;
 				return UINode.CreateFromAsset(nodeType, assetPathValue, assetPathType, parentTransform);
+			}
+			catch
+			{
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// 애셋을 로드하여 생성. (비동기)
+		/// </summary>
+		public static async Task<UINode> CreateFromAssetAsync(Type nodeType, string assetPath, AssetPathType assetPathType = AssetPathType.Resources, Transform parentTransform = null)
+		{
+			try
+			{
+				if (nodeType == null)
+					throw new ArgumentNullException(nameof(nodeType));
+				if (string.IsNullOrWhiteSpace(assetPath))
+					throw new ArgumentException(nameof(assetPath));
+				if (!Reflections.IsBaseClass(nodeType, typeof(UINode)))
+					throw new ArgumentException(nameof(nodeType));
+
+				var obj = await InstantiationHelper.CreateFromAssetAsync(assetPath, assetPathType, null, parentTransform);
+				var node = (UINode)obj.GetOrAddComponent(nodeType);
+				if (parentTransform != null)
+					node.transform.SetParent(parentTransform, true);
+				TransformHelper.ResetRectTransform(node.RectTransform);
+				return node;
+			}
+			catch
+			{
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// 특성에서 애셋을 로드하여 생성. (비동기)
+		/// </summary>
+		public static async Task<UINode> CreateFromAttributeAsync(Type nodeType, Transform parentTransform = null)
+		{
+			try
+			{
+				if (!Reflections.TryGetAttribute<AssetPathAttribute>(nodeType, out var assetPathAttribute))
+					throw new InvalidOperationException(nameof(nodeType));
+
+				var assetPathValue = assetPathAttribute.Value;
+				var assetPathType = assetPathAttribute.Type;
+				var node = await UINode.CreateFromAssetAsync(nodeType, assetPathValue, assetPathType, parentTransform);
+				return node;
 			}
 			catch
 			{
@@ -421,6 +471,23 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
+		/// 애셋을 로드하여 생성. (비동기)
+		/// </summary>
+		public static async Task<TUINode> CreateFromAssetAsync<TUINode>(string assetPath, AssetPathType assetPathType = AssetPathType.Resources, Transform parentTransform = null) where TUINode : UINode
+		{
+			try
+			{
+				var nodeType = typeof(TUINode);
+				var node = await UINode.CreateFromAssetAsync(nodeType, assetPath, assetPathType, parentTransform);
+				return (TUINode)node;
+			}
+			catch
+			{
+				throw;
+			}
+		}
+
+		/// <summary>
 		/// 특성에서 애셋을 로드하여 생성.
 		/// </summary>
 		public static TUINode CreateFromAttribute<TUINode>(Transform parentTransform = null) where TUINode : UINode
@@ -430,6 +497,23 @@ namespace Crockhead.Unity.UI
 				var nodeType = typeof(TUINode);
 				var node = (TUINode)UINode.CreateFromAttribute(nodeType, parentTransform);
 				return node;
+			}
+			catch
+			{
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// 특성에서 애셋을 로드하여 생성. (비동기)
+		/// </summary>
+		public static async Task<TUINode> CreateFromAttributeAsync<TUINode>(Transform parentTransform = null) where TUINode : UINode
+		{
+			try
+			{
+				var nodeType = typeof(TUINode);
+				var node = await UINode.CreateFromAttributeAsync(nodeType, parentTransform);
+				return (TUINode)node;
 			}
 			catch
 			{

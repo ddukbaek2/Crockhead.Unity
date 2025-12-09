@@ -3,6 +3,7 @@ using Crockhead.Scripting;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -96,6 +97,74 @@ namespace Crockhead.Unity
 		}
 
 		/// <summary>
+		/// 애셋으로부터 게임 오브젝트 생성. (비동기)
+		/// </summary>
+		public static async Task<GameObject> CreateFromAssetAsync(string assetPath, AssetPathType assetPathType, Type[] requiredComponentTypes = null, Transform parentTransform = null)
+		{
+			try
+			{
+				// 리소스 로드.
+				using var assetLoader = new AssetLoader<GameObject>(assetPath, assetPathType);
+				var asyncOperation = assetLoader.LoadAsync();
+				await TaskHelper.StartTask(asyncOperation);
+				var asset = assetLoader.Asset;
+				if (asset == null)
+					throw new NullReferenceException(assetPath);
+
+				// 인스턴스 생성.
+				var assetName = Path.GetFileNameWithoutExtension(assetPath);
+				var obj = default(GameObject);
+				switch (assetPathType)
+				{
+					case AssetPathType.Resources:
+						{
+							var asyncInstantiateOperation = GameObject.InstantiateAsync<GameObject>(asset);
+							await TaskHelper.StartTask(asyncInstantiateOperation);
+							if (asyncInstantiateOperation.Result.Length == 0)
+								throw new InvalidOperationException(nameof(asyncInstantiateOperation.Result));
+							obj = asyncInstantiateOperation.Result[0];
+							obj.name = assetName;
+							break;
+						}
+
+					case AssetPathType.Addressables:
+						{
+							//Addressables.InstantiateAsync
+							break;
+						}
+				}
+
+				if (obj == null)
+					throw new InvalidOperationException(nameof(obj));
+
+				if (requiredComponentTypes != null)
+				{
+					for (var i = 0; i < requiredComponentTypes.Length; ++i)
+					{
+						var componentType = requiredComponentTypes[i];
+						if (componentType == null)
+							continue;
+
+						obj.GetOrAddComponent(componentType);
+					}
+				}
+
+				if (parentTransform != null)
+				{
+					obj.transform.SetParent(parentTransform, false);
+				}
+
+				TransformHelper.ResetTransform(obj.transform);
+				return obj;
+			}
+			catch (Exception exception)
+			{
+				Debug.LogException(exception);
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// 대상 특성으로부터 게임 오브젝트 생성.
 		/// </summary>
 		public static GameObject CreateFromAttribute(Type componentType, Type[] requiredComponentTypes = null, Transform parentTransform = null)
@@ -108,6 +177,27 @@ namespace Crockhead.Unity
 					throw new InvalidCastException(nameof(componentType));
 
 				var obj = InstantiationHelper.CreateFromAsset(assetPathAttribute.Value, assetPathAttribute.Type, requiredComponentTypes, parentTransform);
+				return obj;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		/// <summary>
+		/// 대상 특성으로부터 게임 오브젝트 생성. (비동기)
+		/// </summary>
+		public static async Task<GameObject> CreateFromAttributeAsync(Type componentType, Type[] requiredComponentTypes = null, Transform parentTransform = null)
+		{
+			try
+			{
+				if (componentType == null)
+					throw new ArgumentNullException(nameof(componentType));
+				if (!Reflections.TryGetAttribute<AssetPathAttribute>(componentType, out var assetPathAttribute))
+					throw new InvalidCastException(nameof(componentType));
+
+				var obj = await InstantiationHelper.CreateFromAssetAsync(assetPathAttribute.Value, assetPathAttribute.Type, requiredComponentTypes, parentTransform);
 				return obj;
 			}
 			catch
@@ -132,6 +222,24 @@ namespace Crockhead.Unity
 				return null;
 			}
 		}
+
+		/// <summary>
+		/// 대상 특성으로부터 게임 오브젝트 생성. (비동기)
+		/// </summary>
+		public static async Task<GameObject> CreateFromAttributeAsync<TComponent>(Type[] requiredComponentTypes = null, Transform parentTransform = null) where TComponent : Component
+		{
+			try
+			{
+				var componentType = typeof(TComponent);
+				var obj = await CreateFromAttributeAsync(componentType, requiredComponentTypes, parentTransform);
+				return obj;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
 
 		/// <summary>
 		/// 기존의 컴포넌트를 가져오거나 없으면 새로 추가하여 반환.

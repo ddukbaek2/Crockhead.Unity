@@ -1,5 +1,7 @@
 using Crockhead.Core;
 using System;
+using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -124,7 +126,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 로드.
 		/// </summary>
-		internal void LoadView()
+		public void LoadView()
 		{
 			try
 			{
@@ -132,12 +134,13 @@ namespace Crockhead.Unity.UI
 					return;
 
 				// 현재 윈도우가 없을 경우.
-				var parentRectTransform = m_Window?.RectTransform ?? null;
 				if (m_Window == null)
 				{
 					Debug.Log("[UIController] LoadView(): Not Binding Window");
 					throw new NullReferenceException(nameof(m_Window));
 				}
+
+				var parentRectTransform = m_Window?.RectTransform ?? null;
 
 				// 뷰 로드 직전 정보를 수집하고, 정보에 따른 뷰를 생성.
 				var viewConfiguration = OnViewWillLoad(typeof(UIView));
@@ -166,42 +169,49 @@ namespace Crockhead.Unity.UI
 			}
 		}
 
-		///// <summary>
-		///// 뷰 로드. (비동기)
-		///// </summary>
-		//public async TaskFactory LoadViewAsync()
-		//{
-		//	if (RootViewIfLoaded)
-		//		await TaskFactory.CompletedTask;
+		/// <summary>
+		/// 뷰 로드. (비동기)
+		/// </summary>
+		public async Task LoadViewAsync()
+		{
+			if (ViewIfLoaded)
+				return;
 
-		//	//if (m_Window == null)
-		//	//	m_Window = UIManager.Instance.TopWindow;
+			// 현재 윈도우가 없을 경우.
+			if (m_Window == null)
+			{
+				Debug.Log("[UIController] LoadViewAsync(): Not Binding Window");
+				throw new NullReferenceException(nameof(m_Window));
+			}
 
-		//	//var controllerType = GetType();
-		//	//var viewType = typeof(UIView);
-		//	//if (Reflections.TryGetAttribute<AssetPathAttribute>(controllerType, out var assetPathAttribute))
-		//	//{
-		//	//	var assetPath = assetPathAttribute.Value;
+			IEnumerator Process()
+			{
+				var parentRectTransform = m_Window?.RectTransform ?? null;
 
-		//	//	// 바인딩일 경우.
-		//	//	// 리소스에 존재하는 애셋을 불러와 기본 뷰 생성.
-		//	//	// 대상 뷰 클래스가 이미 애셋에 부착되어 있을 경우 해당 뷰 클래스를 사용. 
-		//	//	var viewBindingAttribute = assetPathAttribute as UIViewBindingAttribute;
-		//	//	if (viewBindingAttribute != null)
-		//	//	{
-		//	//		viewType = viewBindingAttribute.ViewType;
-		//	//	}
+				// 뷰 로드 직전 정보를 수집하고, 정보에 따른 뷰를 생성.
+				var viewConfiguration = OnViewWillLoad(typeof(UIView));
+				var viewType = viewConfiguration.ViewType;
+				var assetPath = viewConfiguration.AssetPath;
+				var assetPathType = viewConfiguration.AssetPathType;
 
-		//	//	m_RootView = UIView.CreateFromAttribute(viewType, assetPath, AssetPathType.Resources, m_Window.RectTransform);
-		//	//}
-		//	//else
-		//	//{
-		//	//	// 기본 뷰 생성.
-		//	//	m_RootView = UIView.CreateFromAttribute(viewType, m_Window.RectTransform);
-		//	//}
+				// 경로가 없다면 생성.
+				if (string.IsNullOrWhiteSpace(assetPath))
+				{
+					m_View = (UIView)UIView.Create(viewType, parentRectTransform);
+				}
+				// 경로가 있다면 로드.
+				else
+				{
+					m_View = (UIView)UIView.CreateFromAsset(viewType, assetPath, assetPathType, parentRectTransform);
+				}
 
-		//	OnRootViewDidLoad();
-		//}
+				m_View.SetController(this);
+				OnViewDidLoad();
+				yield break;
+			}
+
+			await TaskHelper.StartForeground(Process());
+		}
 
 		/// <summary>
 		/// 뷰 로드 직전 호출됨.

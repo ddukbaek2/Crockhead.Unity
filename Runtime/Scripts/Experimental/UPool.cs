@@ -9,14 +9,14 @@
 //	/// </summary>
 //	public class UPool<TComponent> : Pool<TComponent> where TComponent : Behaviour
 //	{
-//		private MonoBehaviour m_Owner;
+//		private MonoBehaviour m_Start;
 
 //		/// <summary>
 //		/// 생성됨.
 //		/// </summary>
 //		public UPool(MonoBehaviour owner) : base()
 //		{
-//			m_Owner = owner;
+//			m_Start = owner;
 //		}
 
 //		/// <summary>

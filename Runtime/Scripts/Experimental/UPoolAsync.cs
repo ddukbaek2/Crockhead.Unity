@@ -11,14 +11,14 @@
 //	/// </summary>
 //	public class UPoolAsync<TComponent> : PoolAsync<TComponent> where TComponent : Behaviour
 //	{
-//		private MonoBehaviour m_Owner;
+//		private MonoBehaviour m_Start;
 
 //		/// <summary>
 //		/// 생성됨.
 //		/// </summary>
 //		public UPoolAsync(MonoBehaviour owner) : base()
 //		{
-//			m_Owner = owner;
+//			m_Start = owner;
 //		}
 
 //		/// <summary>
@@ -70,7 +70,7 @@
 //				yield break;
 //			}
 
-//			var component = await TaskExtensions.WaitForForground<TComponent>(m_Owner, Process);
+//			var component = await TaskExtensions.WaitForForground<TComponent>(m_Start, Process);
 //			return component;
 //		}
 //	}

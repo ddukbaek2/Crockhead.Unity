@@ -8,8 +8,18 @@ namespace Crockhead.Unity
 	/// 유니티 런타임 처리기.
 	/// </summary>
 	[ExecuteAlways]
-	public class UnityRuntime : SharedComponent<UnityRuntime>
+	public class UnityRuntime : Objectable
 	{
+		/// <summary>
+		/// 공유 인스턴스.
+		/// </summary>
+		private static UnityRuntime s_Instance;
+
+		/// <summary>
+		/// 공유 인스턴스 프로퍼티.
+		/// </summary>
+		public static UnityRuntime Instance => UnityRuntime.Create();
+
 		/// <summary>
 		/// 스케쥴러.
 		/// </summary>
@@ -42,6 +52,36 @@ namespace Crockhead.Unity
 			Disposables.Dispose(m_Scheduler);
 
 			base.OnDispose();
+		}
+
+		/// <summary>
+		/// 생성.
+		/// </summary>
+		public static UnityRuntime Create()
+		{
+			if (s_Instance == null)
+			{
+				s_Instance = GameObject.FindAnyObjectByType<UnityRuntime>();
+			}
+
+			if (s_Instance == null)
+			{
+				var obj = new GameObject("UnityRuntime");
+				s_Instance = obj.AddComponent<UnityRuntime>();
+			}
+
+			return s_Instance;
+		}
+
+		/// <summary>
+		/// 해제.
+		/// </summary>
+		public static void Dispose()
+		{
+			if (s_Instance == null)
+				return;
+
+			GameObject.Destroy(s_Instance.gameObject);
 		}
 	}
 }

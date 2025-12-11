@@ -8,7 +8,7 @@ namespace Crockhead.Unity
 	/// <summary>
 	/// 공유 컴포넌트.
 	/// </summary>
-	public abstract class SharedComponent<TComponent> : MonoBehaviour where TComponent : SharedComponent<TComponent>
+	public abstract class SharedComponent<TComponent> : Objectable where TComponent : SharedComponent<TComponent>
 	{
 		/// <summary>
 		/// 생성 되었는지 여부 프로퍼티.
@@ -28,12 +28,12 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 컴포넌트 타입의 이름 프로퍼티.
 		/// </summary>
-		public static string ComponentName => typeof(TComponent).Name;
+		public static string SharedComponentTypeName => typeof(TComponent).Name;
 
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		private void Awake()
+		protected override void Awake()
 		{
 			if (SharedInstances.IsSet<TComponent>())
 			{
@@ -43,21 +43,13 @@ namespace Crockhead.Unity
 
 			GameObject.DontDestroyOnLoad(gameObject);
 			SharedInstances.Set<TComponent>((TComponent)this);
-			OnCreate();
-		}
-
-		/// <summary>
-		/// 초기화됨.
-		/// </summary>
-		private void Start()
-		{
-			OnInitialize();
+			base.Awake();
 		}
 
 		/// <summary>
 		/// 해제됨.
 		/// </summary>
-		private void OnDestroy()
+		protected override void OnDestroy()
 		{
 			if (!SharedInstances.TryGet<TComponent>(out var sharedInstance))
 				return;
@@ -66,28 +58,31 @@ namespace Crockhead.Unity
 				return;
 
 			SharedInstances.Unset<TComponent>();
-			OnDispose();
+			base.OnDestroy();
 		}
 
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		protected virtual void OnCreate()
+		protected override void OnCreate()
 		{
+			base.OnCreate();
 		}
 
 		/// <summary>
 		/// 초기화됨.
 		/// </summary>
-		protected virtual void OnInitialize()
+		protected override void OnInitialize()
 		{
+			base.OnInitialize();
 		}
 
 		/// <summary>
 		/// 해제됨.
 		/// </summary>
-		protected virtual void OnDispose()
+		protected override void OnDispose()
 		{
+			base.OnDispose();
 		}
 
 		/// <summary>
@@ -102,7 +97,7 @@ namespace Crockhead.Unity
 		protected virtual void OnApplicationPause(bool pause)
 		{
 //#if UNITY_EDITOR
-//			Debug.Log($"[{ComponentName}] OnApplicationPause(pause: {pause})");
+//			Debug.Log($"[{ComponentTypeName}] OnApplicationPause(pause: {pause})");
 //#endif
 		}
 
@@ -113,7 +108,7 @@ namespace Crockhead.Unity
 		protected virtual void OnApplicationFocus(bool focus)
 		{
 //#if UNITY_EDITOR
-//			Debug.Log($"[{ComponentName}] OnApplicationFocus(focus: {focus})");
+//			Debug.Log($"[{ComponentTypeName}] OnApplicationFocus(focus: {focus})");
 //#endif
 		}
 
@@ -123,9 +118,8 @@ namespace Crockhead.Unity
 		protected virtual void OnApplicationQuit()
 		{
 //#if UNITY_EDITOR
-//			Debug.Log($"[{ComponentName}] OnApplicationQuit()");
+//			Debug.Log($"[{ComponentTypeName}] OnApplicationQuit()");
 //#endif
-
 			IsApplicationQuitting = true;
 		}
 
@@ -135,18 +129,8 @@ namespace Crockhead.Unity
 		protected virtual void OnLowMemory()
 		{
 //#if UNITY_EDITOR
-//			Debug.Log($"[{ComponentName}] OnLowMemory()");
+//			Debug.Log($"[{ComponentTypeName}] OnLowMemory()");
 //#endif
-		}
-
-		/// <summary>
-		/// 현재 객체가 파괴 되었는지 여부.
-		/// </summary>
-		public bool IsDestroyed()
-		{
-			if (this == null)
-				return true;
-			return false;
 		}
 
 		/// <summary>

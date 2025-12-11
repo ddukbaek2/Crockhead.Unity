@@ -42,7 +42,7 @@ namespace Crockhead.Unity
 		}
 
 		/// <summary>
-		/// 메인 쓰레드 프로퍼티. (첫 호출을 Unity Runtime 컴포넌트 내부에서 진행)
+		/// 메인 쓰레드 프로퍼티. (첫 호출을 UnityRuntime 컴포넌트 내부에서 진행)
 		/// </summary>
 		public static DispatchQueue Foreground { internal set; get; } = null;
 

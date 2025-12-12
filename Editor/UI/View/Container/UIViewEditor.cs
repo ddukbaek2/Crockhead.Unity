@@ -9,7 +9,7 @@ namespace Crockhead.Unity.UI.Editor
 	/// </summary>
 	[CustomEditor(typeof(UIView), true)]
 	[CanEditMultipleObjects]
-	public class UIViewEditor : UIViewEditor
+	public class UIViewEditor : InspectorEditor
 	{
 		/// <summary>
 		/// 인스펙터 출력됨.

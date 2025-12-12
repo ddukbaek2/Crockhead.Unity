@@ -3,7 +3,7 @@ using TMPro.EditorUtilities;
 using UnityEditor;
 
 
-namespace Crockhead.Unity.Editor
+namespace Crockhead.Unity.UI.Editor
 {
 	/// <summary>
 	/// 레이블 뷰 인스펙터 확장.

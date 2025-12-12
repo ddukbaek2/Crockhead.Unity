@@ -1,9 +1,8 @@
-using Crockhead.Unity.UI;
 using UnityEditor;
 using UnityEditor.UI;
 
 
-namespace Crockhead.Unity.Editor
+namespace Crockhead.Unity.UI.Editor
 {
 	/// <summary>
 	/// 버튼 뷰 인스펙터 확장.

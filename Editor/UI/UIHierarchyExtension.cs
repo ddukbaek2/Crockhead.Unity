@@ -1,11 +1,10 @@
-using Crockhead.Unity.UI;
+using Crockhead.Unity.Editor;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
 
-namespace Crockhead.Unity.Editor
+namespace Crockhead.Unity.UI.Editor
 {
 	/// <summary>
 	/// UI 하이어라키 확장.

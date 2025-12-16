@@ -147,5 +147,43 @@ namespace Crockhead.Unity.UI
 			vertexHelper.AddTriangle(vertexStartIndex + 0, vertexStartIndex + 1, vertexStartIndex + 2);
 			vertexHelper.AddTriangle(vertexStartIndex + 0, vertexStartIndex + 2, vertexStartIndex + 3);
 		}
+
+		///// <summary>
+		///// 사각형 추가.
+		///// </summary>
+		//public static void AddQuad(VertexHelper vertexHelper,
+		//	RectTransform currentRectTransform, RectTransform targetRectTransform, 
+		//	float xMin, float yMin, float xMax, float yMax,
+		//	Color color)
+		//{
+		//	// 레이블 뷰의 문자열 오프셋을 레이블 뷰의 로컬 좌표계로 변경.
+		//	var w0 = targetRectTransform.TransformPoint(new Vector3(xMin, yMin, 0f));
+		//	var w1 = targetRectTransform.TransformPoint(new Vector3(xMin, yMax, 0f));
+		//	var w2 = targetRectTransform.TransformPoint(new Vector3(xMax, yMax, 0f));
+		//	var w3 = targetRectTransform.TransformPoint(new Vector3(xMax, yMin, 0f));
+
+		//	// 레이블 뷰의 로컬 좌표계를 현재 뷰의 오프셋으로 변경.
+		//	var p0 = currentRectTransform.InverseTransformPoint(w0);
+		//	var p1 = currentRectTransform.InverseTransformPoint(w1);
+		//	var p2 = currentRectTransform.InverseTransformPoint(w2);
+		//	var p3 = currentRectTransform.InverseTransformPoint(w3);
+
+		//	// 정점 추가.
+		//	var vertexStartIndex = vertexHelper.currentVertCount;
+		//	var vertex = UIVertex.simpleVert;
+		//	vertex.color = color;
+		//	vertex.position = p0;
+		//	vertexHelper.AddVert(vertex);
+		//	vertex.position = p1;
+		//	vertexHelper.AddVert(vertex);
+		//	vertex.position = p2;
+		//	vertexHelper.AddVert(vertex);
+		//	vertex.position = p3;
+		//	vertexHelper.AddVert(vertex);
+
+		//	// 삼각형 인덱스 추가.
+		//	vertexHelper.AddTriangle(vertexStartIndex + 0, vertexStartIndex + 1, vertexStartIndex + 2);
+		//	vertexHelper.AddTriangle(vertexStartIndex + 0, vertexStartIndex + 2, vertexStartIndex + 3);
+		//}
 	}
 }

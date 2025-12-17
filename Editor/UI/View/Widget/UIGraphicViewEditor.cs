@@ -25,7 +25,7 @@ namespace Crockhead.Unity.UI.Editor
 			// 그리기.
 			using (var localizationGroup = new LocalizationGroup(target))
 			{
-				DrawPropertyAsSerializedObject(serializedObject, CheckVisible);
+				DrawPropertyAsSerializedObject(serializedObject, OnVisibleProperty);
 				var component = target as MonoBehaviour;
 			}
 		}
@@ -33,12 +33,15 @@ namespace Crockhead.Unity.UI.Editor
 		/// <summary>
 		/// 필터링.
 		/// </summary>
-		private bool CheckVisible(SerializedProperty serializedProperty)
+		protected virtual bool OnVisibleProperty(SerializedProperty serializedProperty)
 		{
+			if (serializedProperty == null)
+				return false;
+
 			switch (serializedProperty.propertyPath)
 			{
 				case "m_Material":
-				case "m_Color":
+				//case "m_Color":
 				case "m_Maskable":
 				case "m_OnCullStateChanged":
 					return false;

@@ -16,13 +16,18 @@ namespace Crockhead.Unity.UI
 	public abstract class UINode : UIBehaviour
 	{
 		#region INSPECTOR
-		[SerializeField] private RectTransform m_RectTransform;
+		//[HideInInspector][SerializeField] private RectTransform m_RectTransform;
 		#endregion
 
 		/// <summary>
 		/// 월드 좌표계 기준 사각형 위치.
 		/// </summary>
 		private static readonly Vector3[] s_FourCornersArray = new Vector3[] { Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };
+
+		/// <summary>
+		/// 렉트 트랜스폼.
+		/// </summary>
+		private RectTransform m_RectTransform;
 
 		/// <summary>
 		/// 렉트 트랜스폼 프로퍼티.
@@ -44,11 +49,17 @@ namespace Crockhead.Unity.UI
 			if (IsDestroyed())
 				return;
 
+			var type = GetType();
+			ComponentName = type.Name;
+
+#if UNITY_EDITOR
+			if (!Application.isPlaying)
+				OnAddComponent();
+#endif
+
 			if (!Application.isPlaying)
 				return;
 
-			var type = GetType();
-			ComponentName = type.Name;
 			OnCreate();
 		}
 
@@ -78,6 +89,11 @@ namespace Crockhead.Unity.UI
 			if (IsDestroyed())
 				return;
 
+#if UNITY_EDITOR
+			if (!Application.isPlaying)
+				OnRemoveComponent();
+#endif
+
 			if (!Application.isPlaying)
 				return;
 
@@ -85,14 +101,25 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
+		/// 생성됨. (에디터)
+		/// </summary>
+		protected virtual void OnAddComponent()
+		{
+		}
+
+		/// <summary>
+		/// 제거됨. (에디터)
+		/// </summary>
+		protected virtual void OnRemoveComponent()
+		{
+		}
+
+		/// <summary>
 		/// 생성됨.
 		/// </summary>
 		protected virtual void OnCreate()
 		{
-			if (m_RectTransform == null)
-			{
-				m_RectTransform = GetComponent<RectTransform>();
-			}
+			SetFieldIfNull(ref m_RectTransform);
 		}
 
 		/// <summary>
@@ -303,6 +330,28 @@ namespace Crockhead.Unity.UI
 			if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screenPoint, camera, out var localPoint))
 				return Vector2.zero;
 			return localPoint;
+		}
+
+		/// <summary>
+		/// 프로퍼티 셋팅.
+		/// </summary>
+		protected void SetFieldIfNull<TComponent>(ref TComponent component) where TComponent : Component
+		{
+			if (component != null)
+				return;
+
+			component = GetOrAddComponent<TComponent>();
+		}
+
+		/// <summary>
+		/// 프로퍼티 셋팅.
+		/// </summary>
+		protected void SetFieldIfNull<TComponent>(ref TComponent component, string transformPath = "") where TComponent : Component
+		{
+			if (component != null)
+				return;
+
+			component = GetOrAddComponent<TComponent>(transformPath);
 		}
 
 		/// <summary>

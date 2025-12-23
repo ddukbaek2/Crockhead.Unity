@@ -30,7 +30,7 @@ namespace Crockhead.Unity.Editor
 		/// <summary>
 		/// 하이어라키에 새 게임오브젝트와 컴포넌트 추가.
 		/// </summary>
-		public static TComponent CreateComponentToHierarchy<TComponent>(string name, Transform parentTransform = null) where TComponent : MonoBehaviour
+		public static TComponent CreateComponentToHierarchy<TComponent>(string name, Transform parentTransform = null) where TComponent : Component
 		{
 			// 게임오브젝트 생성.
 			var obj = new GameObject(name);

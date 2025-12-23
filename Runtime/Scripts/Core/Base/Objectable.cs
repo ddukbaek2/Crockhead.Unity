@@ -1,6 +1,3 @@
-using Crockhead.Core;
-using System;
-using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -28,6 +25,11 @@ namespace Crockhead.Unity
 			ComponentTypeName = type.Name;
 			Debug.Log($"[{ComponentTypeName}] Awake()");
 
+#if UNITY_EDITOR
+			if (!Application.isPlaying)
+				OnAddComponent();
+#endif
+
 			OnCreate();
 		}
 
@@ -36,7 +38,7 @@ namespace Crockhead.Unity
 		/// </summary>
 		protected virtual void Start()
 		{
-			Debug.Log($"[{ComponentTypeName}] OnPrepare()");
+			Debug.Log($"[{ComponentTypeName}] Start()");
 
 			OnInitialize();
 		}
@@ -47,6 +49,11 @@ namespace Crockhead.Unity
 		protected virtual void OnDestroy()
 		{
 			Debug.Log($"[{ComponentTypeName}] OnDestroy()");
+
+#if UNITY_EDITOR
+			if (!Application.isPlaying)
+				OnRemoveComponent();
+#endif
 
 			OnDispose();
 		}
@@ -135,6 +142,20 @@ namespace Crockhead.Unity
 		}
 
 		/// <summary>
+		/// 생성됨. (에디터)
+		/// </summary>
+		protected virtual void OnAddComponent()
+		{
+		}
+
+		/// <summary>
+		/// 제거됨. (에디터)
+		/// </summary>
+		protected virtual void OnRemoveComponent()
+		{
+		}
+
+		/// <summary>
 		/// 현재 객체가 파괴 되었는지 여부.
 		/// </summary>
 		public bool IsDestroyed()
@@ -150,6 +171,28 @@ namespace Crockhead.Unity
 		public virtual bool IsActive()
 		{
 			return isActiveAndEnabled;
+		}
+
+		/// <summary>
+		/// 프로퍼티 셋팅.
+		/// </summary>
+		protected void SetFieldIfNull<TComponent>(ref TComponent component) where TComponent : Component
+		{
+			if (component != null)
+				return;
+
+			component = GetOrAddComponent<TComponent>();
+		}
+
+		/// <summary>
+		/// 프로퍼티 셋팅.
+		/// </summary>
+		protected void SetFieldIfNull<TComponent>(ref TComponent component, string transformPath = "") where TComponent : Component
+		{
+			if (component != null)
+				return;
+
+			component = GetOrAddComponent<TComponent>(transformPath);
 		}
 
 		/// <summary>

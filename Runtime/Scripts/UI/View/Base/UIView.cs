@@ -13,8 +13,13 @@ namespace Crockhead.Unity.UI
 	{
 		#region INSPECTOR
 		//[SerializeField] private CanvasRenderer m_CanvasRenderer;
-		[SerializeField] private UIImageView m_BackgroundImage;
+		//[SerializeField] private UIImageView m_BackgroundImage;
 		#endregion
+
+		/// <summary>
+		/// 배경 이미지 뷰.
+		/// </summary>
+		private UIImageView m_BackgroundImage;
 
 		/// <summary>
 		/// 소속 윈도우.
@@ -79,7 +84,6 @@ namespace Crockhead.Unity.UI
 
 			// 하나의 게임 오브젝트에는 동일한 뷰 클래스는 하나만 붙어 있어야 한다.
 			CheckIfOnlyAnotherViewExists();
-
 
 			//if (m_CanvasRenderer == null)
 			//{
@@ -211,7 +215,7 @@ namespace Crockhead.Unity.UI
 		//}
 
 		/// <summary>
-		/// 현재 게임 오브젝트에 다른 뷰가 붙어있는지 확인.
+		/// 현재 게임 오브젝트에 다른 UI 뷰가 붙어있는지 확인.
 		/// </summary>
 		public bool CheckIfOnlyAnotherViewExists()
 		{
@@ -223,7 +227,7 @@ namespace Crockhead.Unity.UI
 					continue;
 
 				Debug.LogError($"[{ComponentName}] Exists Other UIView: {existView}");
-				//GameObject.Destroy(existView);
+				//GameObject.Dispose(existView);
 				return true;
 			}
 

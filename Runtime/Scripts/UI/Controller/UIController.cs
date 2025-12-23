@@ -160,6 +160,7 @@ namespace Crockhead.Unity.UI
 				}
 
 				m_View.SetController(this);
+				m_View.gameObject.SetActive(false);
 				OnViewDidLoad();
 			}
 			catch (Exception exception)
@@ -184,33 +185,29 @@ namespace Crockhead.Unity.UI
 				throw new NullReferenceException(nameof(m_Window));
 			}
 
-			IEnumerator Process()
+			var parentRectTransform = m_Window?.RectTransform ?? null;
+
+			// 뷰 로드 직전 정보를 수집하고, 정보에 따른 뷰를 생성.
+			var viewConfiguration = OnViewWillLoad(typeof(UIView));
+			var viewType = viewConfiguration.ViewType;
+			var assetPath = viewConfiguration.AssetPath;
+			var assetPathType = viewConfiguration.AssetPathType;
+
+			// 경로가 없다면 생성.
+			if (string.IsNullOrWhiteSpace(assetPath))
 			{
-				var parentRectTransform = m_Window?.RectTransform ?? null;
-
-				// 뷰 로드 직전 정보를 수집하고, 정보에 따른 뷰를 생성.
-				var viewConfiguration = OnViewWillLoad(typeof(UIView));
-				var viewType = viewConfiguration.ViewType;
-				var assetPath = viewConfiguration.AssetPath;
-				var assetPathType = viewConfiguration.AssetPathType;
-
-				// 경로가 없다면 생성.
-				if (string.IsNullOrWhiteSpace(assetPath))
-				{
-					m_View = (UIView)UIView.Create(viewType, parentRectTransform);
-				}
-				// 경로가 있다면 로드.
-				else
-				{
-					m_View = (UIView)UIView.CreateFromAsset(viewType, assetPath, assetPathType, parentRectTransform);
-				}
-
-				m_View.SetController(this);
-				OnViewDidLoad();
-				yield break;
+				m_View = (UIView)UIView.Create(viewType, parentRectTransform);
+			}
+			// 경로가 있다면 로드.
+			else
+			{
+				var node = await UIView.CreateFromAssetAsync(viewType, assetPath, assetPathType, parentRectTransform);
+				m_View = node as UIView;
 			}
 
-			await TaskHelper.StartForeground(Process());
+			m_View.SetController(this);
+			m_View.gameObject.SetActive(false);
+			OnViewDidLoad();
 		}
 
 		/// <summary>
@@ -264,6 +261,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnViewWillApear()
 		{
+			View.gameObject.SetActive(true);
 		}
 
 		/// <summary>
@@ -285,33 +283,40 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnViewDidDisapear()
 		{
+			View.gameObject.SetActive(false);
 		}
 
 		/// <summary>
 		/// 제출. (현재 컨트롤러가 제출)
 		/// </summary>
-		public void Present(UIController controller)
+		public async Task Present(UIController controller)
 		{
 			m_PresentingController = controller;
 			controller.m_PresentedController = this;
 			controller.Window = m_Window;
-			controller.LoadView();
+			await controller.LoadViewAsync();
+			await Task.CompletedTask;
+
+			OnViewWillApear();
+			OnViewDidAppear();
 		}
 
 		/// <summary>
 		/// 제출 철회.
 		/// </summary>
-		public void Dismiss()
+		public async Task Dismiss()
 		{
-			View.gameObject.SetActive(false);
+			OnViewWillDisapear();
+			OnViewDidDisapear();
+			await Task.CompletedTask;
 		}
 
-		/// <summary>
-		/// 뷰 반환.
-		/// </summary>
-		public TUIView GetView<TUIView>() where TUIView : UIView
-		{
-			return (TUIView)View;
-		}
+		///// <summary>
+		///// 뷰 반환.
+		///// </summary>
+		//public TUIView GetView<TUIView>() where TUIView : UIView
+		//{
+		//	return (TUIView)View;
+		//}
 	}
 }

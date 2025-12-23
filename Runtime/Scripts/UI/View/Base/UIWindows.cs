@@ -16,7 +16,7 @@ namespace Crockhead.Unity.UI
 		private List<UIWindow> m_Windows;
 
 		/// <summary>
-		/// 윈도우 갯수.
+		/// 윈도우 갯수 프로퍼티.
 		/// </summary>
 		public int Count => m_Windows.Count;
 

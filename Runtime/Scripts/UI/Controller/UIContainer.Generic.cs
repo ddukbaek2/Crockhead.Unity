@@ -5,7 +5,7 @@ using System;
 namespace Crockhead.Unity.UI
 {
 	/// <summary>
-	/// 뷰 컨트롤러.
+	/// 제네릭 뷰 컨트롤러.
 	/// </summary>
 	public class UIController<TUIView> : UIController where TUIView : UIView
 	{

@@ -1,4 +1,5 @@
 using Crockhead.Core;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -130,7 +131,6 @@ namespace Crockhead.Unity.UI
 				m_GraphicRaycaster = GetOrAddComponent<GraphicRaycaster>();
 			}
 
-			//m_Canvas.renderMode = RenderMode.ScreenSpaceOverlay; // RenderMode.ScreenSpaceCamera
 			m_Canvas.planeDistance = 100;
 			m_Canvas.pixelPerfect = true;
 			m_Canvas.additionalShaderChannels = AdditionalCanvasShaderChannels.None;
@@ -196,7 +196,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 제출. (현재 윈도우가 제출)
 		/// </summary>
-		public void Present(UIController controller)
+		public async Task Present(UIController controller)
 		{
 			// 기존 해제.
 			if (PresentingController != null)
@@ -206,7 +206,7 @@ namespace Crockhead.Unity.UI
 
 			controller.Window = this;
 			PresentingController = controller;
-			PresentingController.LoadView();
+			await PresentingController.LoadViewAsync();
 		}
 	}
 }

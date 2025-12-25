@@ -1,5 +1,6 @@
 using Crockhead.Core;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -13,7 +14,7 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 쓰레드 디스패쳐.
 		/// </summary>
-		private static ThreadDispatcher s_ThreadDispatcher;
+		private static ThreadPostDispatcher s_ThreadPostDispatcher;
 
 		/// <summary>
 		/// 생성.
@@ -23,7 +24,7 @@ namespace Crockhead.Unity
 			Dispose();
 
 			// 대상 쓰레드일 때 생성해야 대상 쓰레드의 컨텍스트를 정상 캡쳐함.
-			s_ThreadDispatcher = new ThreadDispatcher();
+			s_ThreadPostDispatcher = new ThreadPostDispatcher();
 		}
 
 		/// <summary>
@@ -31,11 +32,11 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static void Dispose()
 		{
-			if (s_ThreadDispatcher == null || s_ThreadDispatcher.IsDisposed)
+			if (s_ThreadPostDispatcher == null || s_ThreadPostDispatcher.IsDisposed)
 				return;
 
-			Disposables.Dispose(s_ThreadDispatcher);
-			s_ThreadDispatcher = null;
+			Disposables.Dispose(s_ThreadPostDispatcher);
+			s_ThreadPostDispatcher = null;
 		}
 
 		/// <summary>
@@ -43,7 +44,7 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static void Post(Action action)
 		{
-			if (s_ThreadDispatcher == null || s_ThreadDispatcher.IsDisposed)
+			if (s_ThreadPostDispatcher == null || s_ThreadPostDispatcher.IsDisposed)
 			{
 				// 쓰레드 디스패쳐가 없을 경우 현재 쓰레드에서 즉시 호출.
 				action?.Invoke();
@@ -51,7 +52,7 @@ namespace Crockhead.Unity
 			}
 
 			// 호출 요청.
-			s_ThreadDispatcher.Post(action);
+			s_ThreadPostDispatcher.Post(action);
 		}
 
 		/// <summary>
@@ -82,7 +83,7 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static Task PostAsync(Func<Task> taskFactory)
 		{
-			if (s_ThreadDispatcher == null || s_ThreadDispatcher.IsDisposed)
+			if (s_ThreadPostDispatcher == null || s_ThreadPostDispatcher.IsDisposed)
 				throw new InvalidOperationException("ThreadDispatcher is Invalid.");
 
 			static async Task RunAsync(Func<Task> taskFactory, TaskCompletionSource<object> taskCompletionSource)
@@ -111,7 +112,7 @@ namespace Crockhead.Unity
 		/// </summary>
 		public static Task<T> PostAsync<T>(Func<Task<T>> taskFactory)
 		{
-			if (s_ThreadDispatcher == null || s_ThreadDispatcher.IsDisposed)
+			if (s_ThreadPostDispatcher == null || s_ThreadPostDispatcher.IsDisposed)
 				throw new InvalidOperationException("ThreadDispatcher is Invalid.");
 
 			static async Task RunAsync(Func<Task<T>> taskFactory, TaskCompletionSource<T> taskCompletionSource)

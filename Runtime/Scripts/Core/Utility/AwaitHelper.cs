@@ -11,23 +11,23 @@ namespace Crockhead.Unity
 	/// </summary>
 	public static class AwaitHelper
 	{
-		/// <summary>
-		/// 메인 쓰레드에서 엔진 매니지드 타이밍에 액션 수행.
-		/// </summary>
-		public static Task RunAsync(Func<Task> action)
-		{
-			// 코루틴 실행 후 태스크 완료 처리.
-			static IEnumerator Process(TaskCompletionSource<bool> taskCompletionSource, Action action)
-			{
-				yield return routine;
-				taskCompletionSource.SetResult(true);
-				yield break;
-			}
+		///// <summary>
+		///// 메인 쓰레드에서 엔진 매니지드 타이밍에 액션 수행.
+		///// </summary>
+		//public static Task RunAsync(Func<Task> action)
+		//{
+		//	// 코루틴 실행 후 태스크 완료 처리.
+		//	static IEnumerator Process(TaskCompletionSource<bool> taskCompletionSource, Action action)
+		//	{
+		//		yield return routine;
+		//		taskCompletionSource.SetResult(true);
+		//		yield break;
+		//	}
 
-			var taskCompletionSource = new TaskCompletionSource<bool>();
-			UnityRuntime.Instance.StartCoroutine(Process(taskCompletionSource, routine));
-			return taskCompletionSource.Task;
-		}
+		//	var taskCompletionSource = new TaskCompletionSource<bool>();
+		//	UnityRuntime.Instance.StartCoroutine(Process(taskCompletionSource, routine));
+		//	return taskCompletionSource.Task;
+		//}
 
 		/// <summary>
 		/// 메인 쓰레드에서 엔진 매니지드 타이밍에 태스크 형태로 코루틴 수행.

@@ -104,7 +104,7 @@ namespace Crockhead.Unity
 				// 리소스 로드.
 				using var assetLoader = new AssetLoader<GameObject>(assetPath, assetPathType);
 				var asyncOperation = assetLoader.LoadAsync();
-				await TaskHelper.StartTask(asyncOperation);
+				await TaskHelper.WaitForCompletion(asyncOperation);
 				var asset = assetLoader.Asset;
 				if (asset == null)
 					throw new NullReferenceException(assetPath);
@@ -117,7 +117,7 @@ namespace Crockhead.Unity
 					case AssetPathType.Resources:
 						{
 							var asyncInstantiateOperation = GameObject.InstantiateAsync<GameObject>(asset);
-							await TaskHelper.StartTask(asyncInstantiateOperation);
+							await TaskHelper.WaitForCompletion(asyncInstantiateOperation);
 							if (asyncInstantiateOperation.Result.Length == 0)
 								throw new InvalidOperationException(nameof(asyncInstantiateOperation.Result));
 							obj = asyncInstantiateOperation.Result[0];

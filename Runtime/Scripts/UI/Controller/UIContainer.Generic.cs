@@ -44,12 +44,12 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 로드 직전 호출됨.
 		/// </summary>
-		protected override (Type ViewType, string AssetPath, AssetPathType AssetPathType) OnViewWillLoad(Type viewType)
+		protected override UIViewLoadConfiguration OnViewWillLoad(Type viewType)
 		{
 			// 인자로 넘어오는 기본 뷰를 무시하고, 제네릭으로 설정된 지정 뷰의 타입을 적용.
 			viewType = typeof(TUIView);
-			var viewConfiguration = base.OnViewWillLoad(viewType);
-			return viewConfiguration;
+			var viewLoadConfiguration = base.OnViewWillLoad(viewType);
+			return viewLoadConfiguration;
 		}
 
 		/// <summary>
@@ -63,9 +63,9 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 나타나기 직전 호출됨.
 		/// </summary>
-		protected override void OnViewWillApear()
+		protected override void OnViewWillAppear()
 		{
-			base.OnViewWillApear();
+			base.OnViewWillAppear();
 		}
 
 		/// <summary>
@@ -79,17 +79,17 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 사라지기 직전 호출됨.
 		/// </summary>
-		protected override void OnViewWillDisapear()
+		protected override void OnViewWillDisappear()
 		{
-			base.OnViewWillDisapear();
+			base.OnViewWillDisappear();
 		}
 
 		/// <summary>
 		/// 뷰 사라진 직후 호출됨.
 		/// </summary>
-		protected override void OnViewDidDisapear()
+		protected override void OnViewDidDisappear()
 		{
-			base.OnViewDidDisapear();
+			base.OnViewDidDisappear();
 		}
 	}
 }

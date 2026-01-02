@@ -164,10 +164,10 @@ namespace Crockhead.Unity.Table
 			try
 			{
 				using var assetLoader = new AssetLoader<TextAsset>(m_AssetPath, m_AssetPathType);
-				return await Task.Run(async () =>
+				return await UnityThreadDispatcher.PostAsync(async () =>
 				{
 					var asyncOperation = assetLoader.LoadAsync();
-					await TaskHelper.StartTask(asyncOperation);
+					await TaskHelper.WaitForCompletion(asyncOperation);
 
 					var textAsset = assetLoader.Asset;
 					if (textAsset == null)

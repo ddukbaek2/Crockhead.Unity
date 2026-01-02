@@ -1,4 +1,5 @@
 using Crockhead.Core;
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,9 +20,14 @@ namespace Crockhead.Unity.UI
 		#endregion
 
 		/// <summary>
-		/// 윈도우 목록.
+		/// 윈도우 조정자.
 		/// </summary>
-		private UIWindows m_Windows;
+		private UIWindowCoordinator m_WindowCoordinator;
+
+		/// <summary>
+		/// 프레젠테이션 조정자.
+		/// </summary>
+		private UIPresentationCoordinator m_PresentationCoordinator;
 
 		/// <summary>
 		/// 현재 윈도우가 제출한 컨트롤러.
@@ -29,9 +35,9 @@ namespace Crockhead.Unity.UI
 		private UIController m_PresentingController;
 
 		/// <summary>
-		/// 윈도우 목록 프로퍼티.
+		/// 윈도우 조정자 프로퍼티.
 		/// </summary>
-		public UIWindows Windows { internal set => m_Windows = value; get => m_Windows; }
+		public UIWindowCoordinator WindowCoordinator { internal set => SetWindowCoordinator(value); get => m_WindowCoordinator; }
 
 		/// <summary>
 		/// 캔버스 프로퍼티.
@@ -63,10 +69,10 @@ namespace Crockhead.Unity.UI
 
 				Canvas.sortingOrder = value;
 
-				// 등록되지 않은 윈도우는 Windows가 null이다.
-				if (Windows != null)
+				// 등록되지 않은 윈도우는 윈도우 조정자가 null이다.
+				if (WindowCoordinator != null)
 				{
-					Windows.ForcedUpdateAllWindows();
+					WindowCoordinator.ForcedUpdateAllWindows();
 				}
 			}
 			get
@@ -135,6 +141,8 @@ namespace Crockhead.Unity.UI
 			m_Canvas.pixelPerfect = true;
 			m_Canvas.additionalShaderChannels = AdditionalCanvasShaderChannels.None;
 			m_Canvas.vertexColorAlwaysGammaSpace = true;
+
+			m_PresentationCoordinator = new UIPresentationCoordinator();
 		}
 
 		/// <summary>
@@ -185,28 +193,44 @@ namespace Crockhead.Unity.UI
 			m_CanvasScaler.referencePixelsPerUnit = 100;
 		}
 
-		///// <summary>
-		///// 뷰 추가.
-		///// </summary>
-		//public void AddSubview<TUIView>() where TUIView : UIView
-		//{
-
-		//}
+		/// <summary>
+		/// 윈도우 조정자 설정.
+		/// </summary>
+		internal void SetWindowCoordinator(UIWindowCoordinator windowCoordinator)
+		{
+			m_WindowCoordinator = windowCoordinator;
+		}
 
 		/// <summary>
 		/// 제출. (현재 윈도우가 제출)
 		/// </summary>
-		public async Task Present(UIController controller)
+		public virtual void Present(UIController controller)
 		{
-			// 기존 해제.
-			if (PresentingController != null)
-			{
-				Disposables.Dispose(PresentingController);
-			}
+			if (controller == null)
+				throw new ArgumentNullException(nameof(controller));
 
-			controller.Window = this;
 			PresentingController = controller;
+			PresentingController.Window = this;
+			PresentingController.PresentationCoordinator = m_PresentationCoordinator;
+
+			PresentingController.LoadView();
+			_ = m_PresentationCoordinator.PresentAsync(controller, false);
+		}
+
+		/// <summary>
+		/// 제출. (현재 윈도우가 제출)
+		/// </summary>
+		public virtual async Task PresentAsync(UIController controller)
+		{
+			if (controller == null)
+				throw new ArgumentNullException(nameof(controller));
+
+			PresentingController = controller;
+			PresentingController.Window = this;
+			PresentingController.PresentationCoordinator = m_PresentationCoordinator;
+
 			await PresentingController.LoadViewAsync();
+			await m_PresentationCoordinator.PresentAsync(controller, false);
 		}
 	}
 }

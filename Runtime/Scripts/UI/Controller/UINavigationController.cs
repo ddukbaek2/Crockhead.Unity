@@ -10,6 +10,13 @@ namespace Crockhead.Unity.UI
 	/// </summary>
 	public class UINavigationController : UIController
 	{
+		public struct ViewConfiguration
+		{
+			public Type ViewType { set; get; }
+			public string AssetPath { set; get; }
+			public AssetPathType AssetPathType { set; get; }
+		}
+
 		/// <summary>
 		/// 컨트롤러 목록.
 		/// </summary>
@@ -44,9 +51,10 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 로드 시작됨.
 		/// </summary>
-		protected override (Type ViewType, string AssetPath, AssetPathType AssetPathType) OnViewWillLoad(Type viewType)
+		protected override UIViewLoadConfiguration OnViewWillLoad(Type viewType)
 		{
-			return base.OnViewWillLoad(viewType);
+			var viewLoadConfiguration = base.OnViewWillLoad(viewType);
+			return viewLoadConfiguration;
 		}
 
 		/// <summary>
@@ -60,9 +68,9 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 퇴장 완료됨.
 		/// </summary>
-		protected override void OnViewDidDisapear()
+		protected override void OnViewDidDisappear()
 		{
-			base.OnViewDidDisapear();
+			base.OnViewDidDisappear();
 		}
 
 		/// <summary>

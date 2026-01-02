@@ -9,6 +9,7 @@ namespace Crockhead.Unity.UI
 	public class UIPopupView : UIView
 	{
 		#region INSPECTOR
+		//[SerializeField]
 		#endregion
 
 		/// <summary>

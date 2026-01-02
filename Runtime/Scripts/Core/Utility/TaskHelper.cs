@@ -14,7 +14,7 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 유니티 비동기 대기 객체를 태스크로 변환.
 		/// </summary>
-		public static Task StartTask(AsyncOperation asyncOperation)
+		public static Task WaitForCompletion(this AsyncOperation asyncOperation)
 		{
 			var taskCompletionSource = new TaskCompletionSource<bool>();
 			void Completed(AsyncOperation asyncOperation)
@@ -27,12 +27,28 @@ namespace Crockhead.Unity
 		}
 
 		/// <summary>
+		/// 유니티 비동기 대기 객체를 태스크로 변환.
+		/// </summary>
+		public static Task<T[]> WaitForCompletion<T>(this AsyncInstantiateOperation<T> asyncInstantiateOperation)
+		{
+			var taskCompletionSource = new TaskCompletionSource<T[]>();
+			void Completed(AsyncOperation asyncOperation)
+			{
+				var asyncInstantiateOperation = asyncOperation as AsyncInstantiateOperation<T>;
+				taskCompletionSource.SetResult(asyncInstantiateOperation.Result);
+			}
+
+			asyncInstantiateOperation.completed += Completed;
+			return taskCompletionSource.Task;
+		}
+
+		/// <summary>
 		/// 코루틴 태스크 실행. (메인 쓰레드 / 엔진 매니지드 타이밍)
 		/// </summary>
-		public static Task StartForeground(IEnumerator routine)
+		public static Task StartForeground(this IEnumerator routine)
 		{
 			// 코루틴 실행 후 태스크 완료 처리.
-			static IEnumerator Routine(TaskCompletionSource<bool> taskCompletionSource, IEnumerator routine)
+			static IEnumerator Process(TaskCompletionSource<bool> taskCompletionSource, IEnumerator routine)
 			{
 				yield return routine;
 				taskCompletionSource.SetResult(true);
@@ -40,7 +56,7 @@ namespace Crockhead.Unity
 			}
 
 			var taskCompletionSource = new TaskCompletionSource<bool>();
-			UnityRuntime.Instance.StartCoroutine(Routine(taskCompletionSource, routine));
+			UnityRuntime.Instance.StartCoroutine(Process(taskCompletionSource, routine));
 			return taskCompletionSource.Task;
 		}
 

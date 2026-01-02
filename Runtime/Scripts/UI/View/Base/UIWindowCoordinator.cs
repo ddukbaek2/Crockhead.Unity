@@ -8,7 +8,7 @@ namespace Crockhead.Unity.UI
 	/// <summary>
 	/// 윈도우 관리.
 	/// </summary>
-	public class UIWindows : Disposable
+	public class UIWindowCoordinator : Disposable
 	{
 		/// <summary>
 		/// 윈도우 목록.
@@ -26,14 +26,14 @@ namespace Crockhead.Unity.UI
 		public IEnumerable<UIWindow> Windows => m_Windows;
 
 		/// <summary>
-		/// 최상위 윈도우 프로퍼티.
+		/// 레이어 맨 위의 윈도우 프로퍼티.
 		/// </summary>
-		public UIWindow TopWindow => m_Windows.LastOrDefault();
+		public UIWindow Top => m_Windows.LastOrDefault();
 
 		/// <summary>
 		/// 생성됨.
 		/// </summary>
-		public UIWindows() : base()
+		public UIWindowCoordinator() : base()
 		{
 			m_Windows = new List<UIWindow>();
 		}
@@ -44,7 +44,6 @@ namespace Crockhead.Unity.UI
 		protected override void OnDispose(bool explicitDisposing)
 		{
 		}
-
 
 		/// <summary>
 		/// 윈도우 전체 갱신.
@@ -84,7 +83,7 @@ namespace Crockhead.Unity.UI
 			if (!window.didAwake)
 				return false;
 
-			var topWindow = TopWindow;
+			var topWindow = Top;
 			if (topWindow != null)
 			{
 				window.Canvas.sortingOrder = topWindow.Canvas.sortingOrder + 1;
@@ -95,7 +94,7 @@ namespace Crockhead.Unity.UI
 			}
 
 			m_Windows.Add(window);
-			window.Windows = this;
+			window.WindowCoordinator = this;
 			ForcedUpdateAllWindows();
 			return true;
 		}

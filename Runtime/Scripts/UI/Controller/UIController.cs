@@ -1,6 +1,5 @@
 using Crockhead.Core;
 using System;
-using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -18,6 +17,11 @@ namespace Crockhead.Unity.UI
 		private UIWindow m_Window;
 
 		/// <summary>
+		/// 프레젠테이션 조정자.
+		/// </summary>
+		public UIPresentationCoordinator m_PresentationCoordinator;
+
+		/// <summary>
 		/// 현재 컨트롤러가 제출한 컨트롤러. 
 		/// </summary>
 		private UIController m_PresentingController;
@@ -33,9 +37,19 @@ namespace Crockhead.Unity.UI
 		private UIView m_View;
 
 		/// <summary>
+		/// 트랜지션 상태.
+		/// </summary>
+		private UITransitionStatus m_TransitionStatus;
+
+		/// <summary>
 		/// 소속 윈도우 프로퍼티.
 		/// </summary>
 		public UIWindow Window { internal set => SetWindow(value); get => m_Window; }
+
+		/// <summary>
+		/// 프레젠테이션 조정자 프로퍼티.
+		/// </summary>
+		public UIPresentationCoordinator PresentationCoordinator { internal set => SetPresentationCoordinator(value); get => m_PresentationCoordinator; }
 
 		/// <summary>
 		/// 소유한 뷰 프로퍼티. (자동생성)
@@ -87,6 +101,7 @@ namespace Crockhead.Unity.UI
 		{
 			m_Window = null;
 			m_View = null;
+			m_TransitionStatus = UITransitionStatus.None;
 		}
 
 		/// <summary>
@@ -124,9 +139,17 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
+		/// 프레젠테이션 조정자 설정.
+		/// </summary>
+		internal void SetPresentationCoordinator(UIPresentationCoordinator presentationCoordinator)
+		{
+			m_PresentationCoordinator = presentationCoordinator;
+		}
+
+		/// <summary>
 		/// 뷰 로드.
 		/// </summary>
-		public void LoadView()
+		public virtual void LoadView()
 		{
 			try
 			{
@@ -143,10 +166,10 @@ namespace Crockhead.Unity.UI
 				var parentRectTransform = m_Window?.RectTransform ?? null;
 
 				// 뷰 로드 직전 정보를 수집하고, 정보에 따른 뷰를 생성.
-				var viewConfiguration = OnViewWillLoad(typeof(UIView));
-				var viewType = viewConfiguration.ViewType;
-				var assetPath = viewConfiguration.AssetPath;
-				var assetPathType = viewConfiguration.AssetPathType;
+				var viewLoadConfiguration = OnViewWillLoad(typeof(UIView));
+				var viewType = viewLoadConfiguration.ViewType;
+				var assetPath = viewLoadConfiguration.AssetPath;
+				var assetPathType = viewLoadConfiguration.AssetPathType;
 
 				// 경로가 없다면 생성.
 				if (string.IsNullOrWhiteSpace(assetPath))
@@ -173,7 +196,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 로드. (비동기)
 		/// </summary>
-		public async Task LoadViewAsync()
+		public virtual async Task LoadViewAsync()
 		{
 			if (ViewIfLoaded)
 				return;
@@ -188,15 +211,16 @@ namespace Crockhead.Unity.UI
 			var parentRectTransform = m_Window?.RectTransform ?? null;
 
 			// 뷰 로드 직전 정보를 수집하고, 정보에 따른 뷰를 생성.
-			var viewConfiguration = OnViewWillLoad(typeof(UIView));
-			var viewType = viewConfiguration.ViewType;
-			var assetPath = viewConfiguration.AssetPath;
-			var assetPathType = viewConfiguration.AssetPathType;
+			var viewLoadConfiguration = OnViewWillLoad(typeof(UIView));
+			var viewType = viewLoadConfiguration.ViewType;
+			var assetPath = viewLoadConfiguration.AssetPath;
+			var assetPathType = viewLoadConfiguration.AssetPathType;
 
 			// 경로가 없다면 생성.
 			if (string.IsNullOrWhiteSpace(assetPath))
 			{
-				m_View = (UIView)UIView.Create(viewType, parentRectTransform);
+				var node = UIView.Create(viewType, parentRectTransform);
+				m_View = node as UIView;
 			}
 			// 경로가 있다면 로드.
 			else
@@ -214,7 +238,7 @@ namespace Crockhead.Unity.UI
 		/// 뷰 로드 직전 호출됨.
 		/// <para>이를 상속 받아서 뷰 설정을 각 상속 뷰 별로 커스텀하면 특성 없이 각 뷰 마다 연결될 애셋을 개별 지정 가능.</para>
 		/// </summary>
-		protected virtual (Type ViewType, string AssetPath, AssetPathType AssetPathType) OnViewWillLoad(Type viewType)
+		protected virtual UIViewLoadConfiguration OnViewWillLoad(Type viewType)
 		{
 			if (viewType == null)
 				throw new ArgumentNullException(nameof(viewType));
@@ -246,7 +270,7 @@ namespace Crockhead.Unity.UI
 				assetPathType = assetPathAttribute.Type;
 			}
 
-			return (viewType, assetPathValue, assetPathType);
+			return (UIViewLoadConfiguration)(viewType, assetPathValue, assetPathType);
 		}
 
 		/// <summary>
@@ -259,9 +283,15 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 나타나기 직전 호출됨.
 		/// </summary>
-		protected virtual void OnViewWillApear()
+		protected virtual void OnViewWillAppear()
 		{
 			View.gameObject.SetActive(true);
+
+			m_TransitionStatus = UITransitionStatus.Appearing;
+			//foreach (var child in m_Children)
+			//{
+			//	child.BeginAppearanceTransition(true, animated);
+			//}
 		}
 
 		/// <summary>
@@ -269,46 +299,128 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnViewDidAppear()
 		{
+			m_TransitionStatus = UITransitionStatus.Appeared;
+			//foreach (var child in m_Children)
+			//{
+			//	child.EndAppearanceTransition();
+			//}
 		}
 
 		/// <summary>
 		/// 뷰 사라지기 직전 호출됨.
 		/// </summary>
-		protected virtual void OnViewWillDisapear()
+		protected virtual void OnViewWillDisappear()
 		{
+			m_TransitionStatus = UITransitionStatus.Disappearing;
+			//foreach (var child in m_Children)
+			//{
+			//	child.BeginAppearanceTransition(false, animated);
+			//}
 		}
 
 		/// <summary>
 		/// 뷰 사라진 직후 호출됨.
 		/// </summary>
-		protected virtual void OnViewDidDisapear()
+		protected virtual void OnViewDidDisappear()
 		{
+			m_TransitionStatus = UITransitionStatus.Disappeared;
+			//foreach (var child in m_Children)
+			//{
+			//	child.EndAppearanceTransition();
+			//}
+
 			View.gameObject.SetActive(false);
 		}
 
 		/// <summary>
 		/// 제출. (현재 컨트롤러가 제출)
 		/// </summary>
-		public async Task Present(UIController controller)
+		public virtual void Present(UIController controller, bool animated = false)
 		{
+			if (controller == null)
+				throw new ArgumentNullException(nameof(controller));
+
 			m_PresentingController = controller;
 			controller.m_PresentedController = this;
 			controller.Window = m_Window;
-			await controller.LoadViewAsync();
-			await Task.CompletedTask;
+			controller.m_PresentationCoordinator = m_PresentationCoordinator;
 
-			OnViewWillApear();
-			OnViewDidAppear();
+			controller.LoadView();
+			_ = m_PresentationCoordinator.PresentAsync(controller, animated);			
 		}
 
 		/// <summary>
-		/// 제출 철회.
+		/// 제출. (현재 컨트롤러가 대상 컨트롤러를 제출)
 		/// </summary>
-		public async Task Dismiss()
+		public virtual async Task PresentAsync(UIController controller, bool animated = false)
 		{
-			OnViewWillDisapear();
-			OnViewDidDisapear();
-			await Task.CompletedTask;
+			if (controller == null)
+				throw new ArgumentNullException(nameof(controller));
+
+			m_PresentingController = controller;
+			controller.m_PresentedController = this;
+			controller.Window = m_Window;
+			controller.m_PresentationCoordinator = m_PresentationCoordinator;
+			await controller.LoadViewAsync();
+
+			await m_PresentationCoordinator.PresentAsync(controller, animated);
+		}
+
+		/// <summary>
+		/// 철회. (현재 컨트롤러 자신이 스스로 철회) 
+		/// </summary>
+		public virtual async Task DismissAsync(bool animated = false)
+		{
+			// 프레젠테이션 조정자가 없는 경우 발표되지 않은 것. 
+			if (m_PresentationCoordinator == null)
+				return;
+
+			await m_PresentationCoordinator.DismissAsync(this, animated);
+			m_PresentationCoordinator = null;
+		}
+
+		/// <summary>
+		/// 등장/퇴장 시작 설정.
+		/// </summary>
+		internal void BeginAppearanceTransition(bool isAppearing, bool animated)
+		{
+			// 열기나 닫기가 진행 중이면 제외.
+			if (m_TransitionStatus == UITransitionStatus.Appearing || m_TransitionStatus == UITransitionStatus.Disappearing)
+				return;
+
+			// 이미 열기 되었는데 또 열려고 하거나 닫기 되었는데 또 닫으려고 하면 제외.
+			if ((m_TransitionStatus == UITransitionStatus.Appeared && isAppearing) || (m_TransitionStatus == UITransitionStatus.Disappeared && !isAppearing))
+				return;
+
+			if (isAppearing)
+			{
+				OnViewWillAppear();
+			}
+			else
+			{
+				OnViewWillDisappear();
+			}
+		}
+
+		/// <summary>
+		/// 등장/퇴장 완료 설정.
+		/// </summary>
+		internal void EndAppearanceTransition()
+		{
+			switch (m_TransitionStatus)
+			{
+				case UITransitionStatus.Appearing:
+					{
+						OnViewDidAppear();
+						break;
+					}
+
+				case UITransitionStatus.Disappearing:
+					{
+						OnViewDidDisappear();
+						break;
+					}
+			}
 		}
 
 		///// <summary>

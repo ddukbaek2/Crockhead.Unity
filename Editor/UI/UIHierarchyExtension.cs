@@ -109,7 +109,7 @@ namespace Crockhead.Unity.UI.Editor
 		//	// 설정.
 		//	//Undo.RecordObject(progressview, "SetTexture");
 		//	progressview.interactable = false;
-		//	progressview.transition = Selectable.Transition.None;
+		//	progressview.transition = Selectable.TransitionAsync.None;
 		//	UnityEditor.EditorUtility.SetDirty(progressview);
 
 		//	// 이미지뷰 생성.

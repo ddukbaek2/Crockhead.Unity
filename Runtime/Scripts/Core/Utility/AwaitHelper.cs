@@ -14,7 +14,7 @@ namespace Crockhead.Unity
 		///// <summary>
 		///// 메인 쓰레드에서 엔진 매니지드 타이밍에 액션 수행.
 		///// </summary>
-		//public static Task RunAsync(Func<Task> action)
+		//public static Task TransitionAsync(Func<Task> action)
 		//{
 		//	// 코루틴 실행 후 태스크 완료 처리.
 		//	static IEnumerator Process(TaskCompletionSource<bool> taskCompletionSource, Action action)

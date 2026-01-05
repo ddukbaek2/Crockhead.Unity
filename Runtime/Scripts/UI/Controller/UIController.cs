@@ -194,6 +194,8 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		public async Task LoadViewAsync()
 		{
+			Debug.Log("[UIController] LoadViewAsync()");
+
 			if (ViewIfLoaded)
 				return;
 

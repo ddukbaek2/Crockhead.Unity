@@ -15,10 +15,16 @@ namespace Crockhead.Unity.Editor
 	public abstract class BaseEditor : InspectorEditor
 	{
 		/// <summary>
+		/// 즉시 업데이트 여부 프로퍼티.
+		/// </summary>
+		public bool IsImmediateUpdate { protected set; get; }
+
+		/// <summary>
 		/// 활성화됨.
 		/// </summary>
 		protected virtual void OnEnable()
 		{
+			IsImmediateUpdate = false;
 			EditorApplication.update += OnEditorUpdate;
 		}
 
@@ -36,6 +42,8 @@ namespace Crockhead.Unity.Editor
 		private void OnEditorUpdate()
 		{
 			if (target == null)
+				return;
+			if (!IsImmediateUpdate)
 				return;
 
 			OnUpdate();
@@ -117,7 +125,7 @@ namespace Crockhead.Unity.Editor
 			bool enterChildren = true;
 			while (iterator.NextVisible(enterChildren))
 			{
-				var isVisible = !propertyVisibleFilter?.Invoke(iterator) ?? false;
+				var isVisible = propertyVisibleFilter?.Invoke(iterator) ?? true;
 				if (!isVisible)
 					continue;
 

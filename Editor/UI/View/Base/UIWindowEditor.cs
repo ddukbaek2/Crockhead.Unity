@@ -24,18 +24,21 @@ namespace Crockhead.Unity.UI.Editor
 		protected override void OnEnable()
 		{
 			base.OnEnable();
+			
+			IsImmediateUpdate = true;
 
 			m_Controllers = new List<UIController>();
-			m_ReorderableList = new ReorderableList(m_Controllers, typeof(UIController), false, true, false, false);
-			m_ReorderableList.drawHeaderCallback = OnDrawHeader;
+			//m_ReorderableList = new ReorderableList(m_Controllers, typeof(UIController), false, true, false, false);
+			//m_ReorderableList.drawHeaderCallback = OnDrawHeader;
+			m_ReorderableList = new ReorderableList(m_Controllers, typeof(UIController), false, false, false, false);
 			m_ReorderableList.drawElementCallback = OnDrawElement;
 			m_ReorderableList.elementHeight = EditorGUIUtility.singleLineHeight + 4;
 		}
 
-		private void OnDrawHeader(Rect rect)
-		{
-			EditorGUI.LabelField(rect, "Stack (Top → Bottom)");
-		}
+		//private void OnDrawHeader(Rect rect)
+		//{
+		//	EditorGUI.LabelField(rect, "Stack (Top → Bottom)");
+		//}
 
 		private void OnDrawElement(Rect rect, int index, bool isActive, bool isFocused)
 		{
@@ -78,29 +81,6 @@ namespace Crockhead.Unity.UI.Editor
 			{
 				EditorGUILayout.HelpBox("Presentation History is Playmode Only.", MessageType.Warning);
 			}
-		}
-
-		/// <summary>
-		/// 필터링.
-		/// </summary>
-		protected override bool OnVisibleProperty(SerializedProperty serializedProperty)
-		{
-			var visibled = base.OnVisibleProperty(serializedProperty);
-			if (visibled)
-			{
-				switch (serializedProperty.propertyPath)
-				{
-					case "m_Material":
-					//case "m_Color":
-					case "m_Maskable":
-					case "m_OnCullStateChanged":
-						return false;
-					default:
-						return true;
-				}
-			}
-
-			return visibled;
 		}
 	}
 }

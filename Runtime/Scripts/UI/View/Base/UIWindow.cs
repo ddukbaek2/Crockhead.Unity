@@ -192,13 +192,13 @@ namespace Crockhead.Unity.UI
 		{
 			if (controller == null)
 				throw new ArgumentNullException(nameof(controller));
-			if (PresentedController != null)
+			if (PresentedController != null) // m_PresentationCoordinator.First
 				throw new Exception("[UIWindow] Already Appeared.");
 
 			controller.Window = this;
 			controller.PresentationCoordinator = m_PresentationCoordinator;
 
-			PresentedController.LoadView();
+			controller.LoadView();
 			_ = m_PresentationCoordinator.PresentAsync(controller, false);
 		}
 
@@ -207,15 +207,20 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		public async Task PresentAsync(UIController controller)
 		{
+			Debug.Log($"[UIWindow] PresentAsync()");
+
 			if (controller == null)
 				throw new ArgumentNullException(nameof(controller));
-			if (PresentedController != null)
+			if (PresentedController != null) // m_PresentationCoordinator.First
 				throw new Exception("[UIWindow] Already Appeared.");
 
 			controller.Window = this;
 			controller.PresentationCoordinator = m_PresentationCoordinator;
 
-			await PresentedController.LoadViewAsync();
+			Debug.Log($"[UIWindow] PresentAsync() ==> PresentedController.LoadViewAsync()");
+			await controller.LoadViewAsync();
+
+			Debug.Log($"[UIWindow] PresentAsync() ==> m_PresentationCoordinator.PresentAsync()");
 			await m_PresentationCoordinator.PresentAsync(controller, false);
 		}
 	}

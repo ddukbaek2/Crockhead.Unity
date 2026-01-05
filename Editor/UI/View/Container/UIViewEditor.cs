@@ -1,5 +1,5 @@
+using Crockhead.Unity.Editor;
 using UnityEditor;
-using InspectorEditor = UnityEditor.Editor;
 
 
 namespace Crockhead.Unity.UI.Editor
@@ -9,7 +9,7 @@ namespace Crockhead.Unity.UI.Editor
 	/// </summary>
 	[CustomEditor(typeof(UIView), true)]
 	[CanEditMultipleObjects]
-	public class UIViewEditor : InspectorEditor
+	public class UIViewEditor : BaseEditor
 	{
 		/// <summary>
 		/// 인스펙터 출력됨.

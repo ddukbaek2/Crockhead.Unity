@@ -3,6 +3,7 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Threading.Tasks;
+using UnityEngine;
 
 
 namespace Crockhead.Unity.UI
@@ -48,10 +49,11 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 비동기 애니메이션 처리.
 		/// </summary>
-		public async Task AnimateAsync(float duration, Action action = null)
+		public async Task AnimateAsync(float duration, Action action)
 		{
 			static IEnumerator Process(UIAnimation animation)
 			{
+				yield return new WaitForSeconds(animation.Duration);
 				yield return animation.Sequence.WaitForCompletion();
 			}
 

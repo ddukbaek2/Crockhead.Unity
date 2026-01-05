@@ -80,6 +80,9 @@ namespace Crockhead.Unity.UI
 			Register<UIView, Vector2, VectorOptions>("rectTransform.sizeDelta",
 				static (target, value) => target.RectTransform.sizeDelta = value,
 				static (target) => target.RectTransform.sizeDelta);
+			Register<UIView, Vector2, VectorOptions>("rectTransform.pivot",
+				static (target, value) => target.RectTransform.pivot = value,
+				static (target) => target.RectTransform.pivot);
 			Register<UIView, Vector2, VectorOptions>("rectTransform.offsetMax",
 				static (target, value) => target.RectTransform.offsetMax = value,
 				static (target) => target.RectTransform.offsetMax);

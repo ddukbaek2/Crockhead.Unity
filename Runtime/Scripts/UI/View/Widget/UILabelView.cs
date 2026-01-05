@@ -10,7 +10,7 @@ namespace Crockhead.Unity.UI
 	[ExecuteAlways]
 	[RequireComponent(typeof(RectTransform))]
 	[RequireComponent(typeof(CanvasRenderer))]
-	public class UILabelView : TextMeshProUGUI, IUIView
+	public class UILabelView : TextMeshProUGUI, IUIWidget
 	{
 		#region INSPECTOR
 		[SerializeField] private string m_LocalizeKey;

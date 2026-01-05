@@ -44,6 +44,11 @@ namespace Crockhead.Unity.UI
 		public Sequence Sequence => m_Sequence;
 
 		/// <summary>
+		/// 지속시간 프로퍼티.
+		/// </summary>
+		public float Duration => m_Sequence != null ? TweenExtensions.Duration(m_Sequence) : 0f;
+
+		/// <summary>
 		/// 생성됨.
 		/// </summary>
 		public UIAnimation(UIView view) : base()
@@ -140,6 +145,7 @@ namespace Crockhead.Unity.UI
 
 		/// <summary>
 		/// 준비.
+		/// <para>animation 이벤트에서 프로퍼티값을 변화할 경우 지속시간동안 트랜지션 처리.</para>
 		/// </summary>
 		public Sequence Prepare(float duration, Action animation)
 		{

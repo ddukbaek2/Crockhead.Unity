@@ -18,7 +18,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 표시 완료.
 		/// </summary>
-		Presented,
+		Appeared,
 
 		/// <summary>
 		/// 표시 중단 진행 중.

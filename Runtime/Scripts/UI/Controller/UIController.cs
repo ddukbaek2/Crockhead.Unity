@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Crockhead.Unity.UI
 {
 	/// <summary>
-	/// 컨트롤러.
+	/// 컨트롤러. (모달)
 	/// </summary>
 	public class UIController : Disposable
 	{
@@ -19,22 +19,18 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 프레젠테이션 조정자.
 		/// </summary>
-		public UIPresentationCoordinator m_PresentationCoordinator;
+		private UIPresentationCoordinator m_PresentationCoordinator;
 
 		/// <summary>
-		/// 현재 컨트롤러가 제출한 컨트롤러. 
+		/// 모달 제출 스타일.
+		/// <para>현재 컨트롤러가 Present 될 때 뒤가 보일 것인지 여부 등을 설정.</para>
 		/// </summary>
-		private UIController m_PresentingController;
-
-		/// <summary>
-		/// 현재 컨트롤러를 제출한 컨트롤러. 
-		/// </summary>
-		private UIController m_PresentedController;
+		private UIModalPresentaionStyle m_ModalPresentationStyle;
 
 		/// <summary>
 		/// 소유한 뷰.
 		/// </summary>
-		private UIView m_View;
+		internal UIView m_View;
 
 		/// <summary>
 		/// 트랜지션 상태.
@@ -52,7 +48,17 @@ namespace Crockhead.Unity.UI
 		public UIPresentationCoordinator PresentationCoordinator { internal set => SetPresentationCoordinator(value); get => m_PresentationCoordinator; }
 
 		/// <summary>
-		/// 소유한 뷰 프로퍼티. (자동생성)
+		/// 현재 컨트롤러가 제출되었는지 여부.
+		/// </summary>
+		public bool IsModal => m_PresentationCoordinator != null ? m_PresentationCoordinator.Contains(this) : false;
+
+		/// <summary>
+		/// 모달 제출 스타일 프로퍼티.
+		/// </summary>
+		public UIModalPresentaionStyle ModalPresentationStyle { set => m_ModalPresentationStyle = value; get => m_ModalPresentationStyle; }
+
+		/// <summary>
+		/// 소유한 뷰 프로퍼티. (동기식 자동생성)
 		/// </summary>
 		public UIView View
 		{
@@ -74,25 +80,14 @@ namespace Crockhead.Unity.UI
 		public bool ViewIfLoaded => m_View != null;
 
 		/// <summary>
-		/// 현재 컨트롤러를 제출한 컨트롤러 프로퍼티. (Previous)
+		/// 내가 제출한 대상 프로퍼티. (Next)
 		/// </summary>
-		public UIController PresentedController => m_PresentedController;
+		public UIController PresentedController => m_PresentationCoordinator.GetPresentedController(this);
 
 		/// <summary>
-		/// 현재 컨트롤러가 제출한 컨트롤러 프로퍼티. (Next)
+		/// 나를 제출한 대상 프로퍼티. (Previous)
 		/// </summary>
-		public UIController PresentingController
-		{
-			//set
-			//{
-			//	m_PresentingController = value;
-			//	m_PresentingController.Window = Window;
-			//}
-			get
-			{
-				return m_PresentingController;
-			}
-		}
+		public UIController PresentingController => m_PresentationCoordinator.GetPresentingController(this);
 
 		/// <summary>
 		/// 생성됨.
@@ -102,6 +97,7 @@ namespace Crockhead.Unity.UI
 			m_Window = null;
 			m_View = null;
 			m_TransitionStatus = UITransitionStatus.None;
+			m_ModalPresentationStyle = UIModalPresentaionStyle.Fullscreen;
 		}
 
 		/// <summary>
@@ -149,7 +145,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 로드.
 		/// </summary>
-		public virtual void LoadView()
+		public void LoadView()
 		{
 			try
 			{
@@ -183,7 +179,7 @@ namespace Crockhead.Unity.UI
 				}
 
 				m_View.SetController(this);
-				m_View.gameObject.SetActive(false);
+				//m_View.gameObject.SetActive(false);
 				OnViewDidLoad();
 			}
 			catch (Exception exception)
@@ -196,7 +192,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 로드. (비동기)
 		/// </summary>
-		public virtual async Task LoadViewAsync()
+		public async Task LoadViewAsync()
 		{
 			if (ViewIfLoaded)
 				return;
@@ -230,7 +226,7 @@ namespace Crockhead.Unity.UI
 			}
 
 			m_View.SetController(this);
-			m_View.gameObject.SetActive(false);
+			//m_View.gameObject.SetActive(false);
 			OnViewDidLoad();
 		}
 
@@ -333,17 +329,31 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
+		/// 뷰가 최상위가 된 직후 호출됨.
+		/// </summary>
+		protected virtual void OnViewDidBecomeTop()
+		{
+		}
+
+		/// <summary>
+		/// 뷰가 최상위가 아니게 된 직후 호출됨.
+		/// </summary>
+		protected virtual void OnViewDidResignTop()
+		{
+		}
+
+		/// <summary>
 		/// 제출. (현재 컨트롤러가 제출)
 		/// </summary>
-		public virtual void Present(UIController controller, bool animated = false)
+		public void Present(UIController controller, bool animated = false)
 		{
 			if (controller == null)
-				throw new ArgumentNullException(nameof(controller));
+				throw new ArgumentNullException(nameof(controller));		
+			if (PresentedController != null)
+				throw new Exception("[UIController] Already Appeared.");
 
-			m_PresentingController = controller;
-			controller.m_PresentedController = this;
 			controller.Window = m_Window;
-			controller.m_PresentationCoordinator = m_PresentationCoordinator;
+			controller.PresentationCoordinator = m_PresentationCoordinator;
 
 			controller.LoadView();
 			_ = m_PresentationCoordinator.PresentAsync(controller, animated);			
@@ -352,15 +362,15 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 제출. (현재 컨트롤러가 대상 컨트롤러를 제출)
 		/// </summary>
-		public virtual async Task PresentAsync(UIController controller, bool animated = false)
+		public async Task PresentAsync(UIController controller, bool animated = false)
 		{
 			if (controller == null)
 				throw new ArgumentNullException(nameof(controller));
+			if (PresentedController != null)
+				throw new Exception("[UIController] Already Appeared.");
 
-			m_PresentingController = controller;
-			controller.m_PresentedController = this;
 			controller.Window = m_Window;
-			controller.m_PresentationCoordinator = m_PresentationCoordinator;
+			controller.PresentationCoordinator = m_PresentationCoordinator;
 			await controller.LoadViewAsync();
 
 			await m_PresentationCoordinator.PresentAsync(controller, animated);
@@ -369,7 +379,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 철회. (현재 컨트롤러 자신이 스스로 철회) 
 		/// </summary>
-		public virtual async Task DismissAsync(bool animated = false)
+		public async Task DismissAsync(bool animated = false)
 		{
 			// 프레젠테이션 조정자가 없는 경우 발표되지 않은 것. 
 			if (m_PresentationCoordinator == null)
@@ -430,5 +440,11 @@ namespace Crockhead.Unity.UI
 		//{
 		//	return (TUIView)View;
 		//}
+
+		protected Task Animate(float withDuration, Action animation, Action completion = null)
+		{
+			var animator = new UIAnimator(View);
+			return animator.AnimateAsync(0.5f, animation);
+		}
 	}
 }

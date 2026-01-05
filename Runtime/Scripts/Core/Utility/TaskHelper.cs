@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Threading.Tasks;
@@ -17,9 +18,15 @@ namespace Crockhead.Unity
 		public static Task WaitForCompletion(this AsyncOperation asyncOperation)
 		{
 			var taskCompletionSource = new TaskCompletionSource<bool>();
+			if (asyncOperation == null)
+			{
+				taskCompletionSource.TrySetResult(false);
+				return taskCompletionSource.Task;
+			}
+
 			void Completed(AsyncOperation asyncOperation)
 			{
-				taskCompletionSource.SetResult(true);
+				taskCompletionSource.TrySetResult(true);
 			}
 
 			asyncOperation.completed += Completed;
@@ -29,16 +36,71 @@ namespace Crockhead.Unity
 		/// <summary>
 		/// 유니티 비동기 대기 객체를 태스크로 변환.
 		/// </summary>
-		public static Task<T[]> WaitForCompletion<T>(this AsyncInstantiateOperation<T> asyncInstantiateOperation)
+		public static Task WaitForCompletion(this AsyncInstantiateOperation asyncInstantiateOperation)
 		{
-			var taskCompletionSource = new TaskCompletionSource<T[]>();
+			var taskCompletionSource = new TaskCompletionSource<bool>();
+			if (asyncInstantiateOperation == null)
+			{
+				taskCompletionSource.TrySetResult(false);
+				return taskCompletionSource.Task;
+			}
+
 			void Completed(AsyncOperation asyncOperation)
 			{
-				var asyncInstantiateOperation = asyncOperation as AsyncInstantiateOperation<T>;
-				taskCompletionSource.SetResult(asyncInstantiateOperation.Result);
+				var asyncInstantiateOperation = asyncOperation as AsyncInstantiateOperation;
+				taskCompletionSource.TrySetResult(true);
 			}
 
 			asyncInstantiateOperation.completed += Completed;
+			return taskCompletionSource.Task;
+		}
+
+		/// <summary>
+		/// 유니티 비동기 대기 객체를 태스크로 변환.
+		/// </summary>
+		public static Task<T[]> WaitForCompletion<T>(this AsyncInstantiateOperation<T> asyncInstantiateOperation)
+		{
+			var taskCompletionSource = new TaskCompletionSource<T[]>();
+			if (asyncInstantiateOperation == null)
+			{
+				taskCompletionSource.TrySetResult(default);
+				return taskCompletionSource.Task;
+			}
+
+			void Completed(AsyncOperation asyncOperation)
+			{
+				var asyncInstantiateOperation = asyncOperation as AsyncInstantiateOperation<T>;
+				taskCompletionSource.TrySetResult(asyncInstantiateOperation.Result);
+			}
+
+			asyncInstantiateOperation.completed += Completed;
+			return taskCompletionSource.Task;
+		}
+
+		/// <summary>
+		/// 두트윈 비동기 대기 객체를 태스크로 변환.
+		/// </summary>
+		public static Task WaitForCompletion(this Tween tween)
+		{
+			var taskCompletionSource = new TaskCompletionSource<bool>();
+			if (tween == null)
+			{
+				taskCompletionSource.TrySetResult(false);
+				return taskCompletionSource.Task;
+			}
+
+			void Completed()
+			{
+				taskCompletionSource.TrySetResult(true);
+			}
+
+			void Disposed()
+			{
+				taskCompletionSource.TrySetResult(false);
+			}
+
+			tween.OnComplete(Completed);
+			tween.OnKill(Disposed);
 			return taskCompletionSource.Task;
 		}
 

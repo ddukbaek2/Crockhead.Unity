@@ -17,7 +17,7 @@ namespace Crockhead.Unity.UI
 	/// </summary>
 	//[ExecuteAlways]
 	[RequireComponent(typeof(RectTransform))]
-	public class UIScrollView : ScrollRect, IUIView
+	public class UIScrollView : ScrollRect, IUIWidget
 	{
 		/// <summary>
 		/// 렉트 트랜스폼.

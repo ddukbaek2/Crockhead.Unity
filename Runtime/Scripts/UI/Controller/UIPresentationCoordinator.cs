@@ -39,9 +39,19 @@ namespace Crockhead.Unity.UI
 		public bool IsBusy => IsPresentingOrDismissing;
 
 		/// <summary>
-		/// 가장 나중에 추가된 컨트롤러. (Last)
+		/// 가장 처음에 추가된 컨트롤러 프로퍼티. (First)
 		/// </summary>
-		public UIController Top => m_Controllers.Last?.Value ?? null;
+		public UIController First => m_Controllers.First?.Value ?? null;
+
+		/// <summary>
+		/// 가장 나중에 추가된 컨트롤러 프로퍼티. (Last)
+		/// </summary>
+		public UIController Last => m_Controllers.Last?.Value ?? null;
+
+		/// <summary>
+		/// 컨트롤러 목록 프로퍼티.
+		/// </summary>
+		public IEnumerable<UIController> Controllers => m_Controllers;
 
 		/// <summary>
 		/// 생성됨.
@@ -87,18 +97,19 @@ namespace Crockhead.Unity.UI
 				// 트랜지션 처리.
 				var from = m_Controllers.Last?.Value ?? null;
 				var to = controller;
+
 				if (from != null) from.BeginAppearanceTransition(false, animated);
 				if (to != null) to.BeginAppearanceTransition(true, animated);
 				await m_TransitionCoordinator.TransitionAsync(from, to, animated);
 				if (from != null) from.EndAppearanceTransition();
 				if (to != null) to.EndAppearanceTransition();
 
-				// 추가.
+				// 프레젠테이션 체인에 추가.
 				m_Controllers.AddLast(to);
 			}
 			finally
 			{
-				m_PresentationStatus = UIPresentationStatus.Presented;
+				m_PresentationStatus = UIPresentationStatus.Appeared;
 			}
 		}
 
@@ -159,7 +170,7 @@ namespace Crockhead.Unity.UI
 					await m_TransitionCoordinator.TransitionAsync(from, to, animated);
 					from.EndAppearanceTransition();
 
-					// 제거.
+					// 프레젠테이션 체인에서 제거.
 					current = current.Previous;
 					m_Controllers.Remove(current);
 				}
@@ -192,25 +203,25 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 현재 노드가 연 노드.
+		/// 현재 노드가 연 노드. (Next)
 		/// </summary>
-		private LinkedListNode<UIController> GetPresented(UIController controller)
+		internal LinkedListNode<UIController> GetPresented(UIController controller)
 		{
 			var node = m_Controllers.Find(controller);
 			return node?.Next ?? null;
 		}
 
 		/// <summary>
-		/// 현재 노드를 연 노드.
+		/// 현재 노드를 연 노드. (Previous)
 		/// </summary>
-		private LinkedListNode<UIController> GetPresenting(UIController controller)
+		internal LinkedListNode<UIController> GetPresenting(UIController controller)
 		{
 			var node = m_Controllers.Find(controller);
 			return node?.Previous ?? null;
 		}
 
 		/// <summary>
-		/// 현재 컨트롤러가 연 컨트롤러.
+		/// 현재 컨트롤러가 연 컨트롤러. (Next)
 		/// </summary>
 		public UIController GetPresentedController(UIController controller)
 		{
@@ -219,7 +230,7 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 현재 컨트롤러를 연 컨트롤러.
+		/// 현재 컨트롤러를 연 컨트롤러. (Previous)
 		/// </summary>
 		public UIController GetPresentingController(UIController controller)
 		{

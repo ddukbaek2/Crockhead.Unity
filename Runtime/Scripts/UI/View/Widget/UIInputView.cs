@@ -10,7 +10,7 @@ namespace Crockhead.Unity.UI
 	[ExecuteAlways]
 	[RequireComponent(typeof(RectTransform))]
 	[RequireComponent(typeof(CanvasRenderer))]
-	public class UIInputView : TMP_InputField, IUIView
+	public class UIInputView : TMP_InputField, IUIWidget
 	{
 		#region INSPECTOR
 		#endregion

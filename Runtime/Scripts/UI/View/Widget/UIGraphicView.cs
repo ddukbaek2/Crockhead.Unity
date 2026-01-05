@@ -10,7 +10,7 @@ namespace Crockhead.Unity.UI
 	/// 터치가 가능한 자유 렌더링 영역 뷰.
 	/// </summary>
 	[RequireComponent(typeof(CanvasRenderer))]
-	public class UIGraphicView : MaskableGraphic, IUIView, IPointerClickHandler
+	public class UIGraphicView : MaskableGraphic, IUIWidget, IPointerClickHandler
 	{
 		/// <summary>
 		/// 텍스쳐 오프셋. (CW)

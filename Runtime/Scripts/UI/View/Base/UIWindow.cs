@@ -30,11 +30,6 @@ namespace Crockhead.Unity.UI
 		private UIPresentationCoordinator m_PresentationCoordinator;
 
 		/// <summary>
-		/// 현재 윈도우가 제출한 컨트롤러.
-		/// </summary>
-		private UIController m_PresentingController;
-
-		/// <summary>
 		/// 윈도우 조정자 프로퍼티.
 		/// </summary>
 		public UIWindowCoordinator WindowCoordinator { internal set => SetWindowCoordinator(value); get => m_WindowCoordinator; }
@@ -102,18 +97,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 현재 윈도우가 제출한 컨트롤러 프로퍼티. (Next)
 		/// </summary>
-		public UIController PresentingController
-		{
-			set
-			{
-				m_PresentingController = value;
-				m_PresentingController.Window = this;
-			}
-			get
-			{
-				return m_PresentingController;
-			}
-		}
+		public UIController PresentedController => m_PresentationCoordinator.First;
 
 		/// <summary>
 		/// 생성됨.
@@ -202,34 +186,36 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 제출. (현재 윈도우가 제출)
+		/// 제출. (현재 윈도우가 루트 컨트롤러로 제출)
 		/// </summary>
-		public virtual void Present(UIController controller)
+		public void Present(UIController controller)
 		{
 			if (controller == null)
 				throw new ArgumentNullException(nameof(controller));
+			if (PresentedController != null)
+				throw new Exception("[UIWindow] Already Appeared.");
 
-			PresentingController = controller;
-			PresentingController.Window = this;
-			PresentingController.PresentationCoordinator = m_PresentationCoordinator;
+			controller.Window = this;
+			controller.PresentationCoordinator = m_PresentationCoordinator;
 
-			PresentingController.LoadView();
+			PresentedController.LoadView();
 			_ = m_PresentationCoordinator.PresentAsync(controller, false);
 		}
 
 		/// <summary>
-		/// 제출. (현재 윈도우가 제출)
+		/// 제출. (현재 윈도우가 루트 컨트롤러로 제출)
 		/// </summary>
-		public virtual async Task PresentAsync(UIController controller)
+		public async Task PresentAsync(UIController controller)
 		{
 			if (controller == null)
 				throw new ArgumentNullException(nameof(controller));
+			if (PresentedController != null)
+				throw new Exception("[UIWindow] Already Appeared.");
 
-			PresentingController = controller;
-			PresentingController.Window = this;
-			PresentingController.PresentationCoordinator = m_PresentationCoordinator;
+			controller.Window = this;
+			controller.PresentationCoordinator = m_PresentationCoordinator;
 
-			await PresentingController.LoadViewAsync();
+			await PresentedController.LoadViewAsync();
 			await m_PresentationCoordinator.PresentAsync(controller, false);
 		}
 	}

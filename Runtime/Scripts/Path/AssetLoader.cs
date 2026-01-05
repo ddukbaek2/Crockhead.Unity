@@ -68,12 +68,14 @@ namespace Crockhead.Unity
 				case AssetPathType.Resources:
 					{
 						m_AssetPathValue = AssetPathHelper.GetResourcePath(assetPath);
+						Debug.Log($"[AssetLoader] {m_AssetPathValue}");
 						break;
 					}
 
 				case AssetPathType.Addressables:
 					{
 						m_AssetPathValue = assetPath;
+						Debug.Log($"[AssetLoader] {m_AssetPathValue}");
 						break;
 					}
 

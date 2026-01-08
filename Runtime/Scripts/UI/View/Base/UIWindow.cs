@@ -207,7 +207,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		public async Task PresentAsync(UIController controller)
 		{
-			Debug.Log($"[UIWindow] PresentAsync()");
+			Debug.Log($"[UIWindow] PresentAsync() ==> Start");
 
 			if (controller == null)
 				throw new ArgumentNullException(nameof(controller));
@@ -222,6 +222,8 @@ namespace Crockhead.Unity.UI
 
 			Debug.Log($"[UIWindow] PresentAsync() ==> m_PresentationCoordinator.PresentAsync()");
 			await m_PresentationCoordinator.PresentAsync(controller, false);
+
+			Debug.Log($"[UIWindow] PresentAsync() ==> Complete");
 		}
 	}
 }

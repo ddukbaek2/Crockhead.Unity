@@ -42,7 +42,7 @@ namespace Crockhead.Unity.UI.Editor
 			var parentTransform = HierarchyExtension.GetSelectionTransform<Transform>(menuCommand);
 
 			// 라벨 생성.
-			var label = HierarchyExtension.CreateComponentToHierarchy<UILabelView>("UILabelView", parentTransform);
+			var label = HierarchyExtension.CreateComponentToHierarchy<UILabelView>("Label", parentTransform);
 
 			// 트랜스폼 설정.
 			var gameObject = label.gameObject;
@@ -53,10 +53,14 @@ namespace Crockhead.Unity.UI.Editor
 			//label.font = Resources.Load<TMP_FontAsset>("Font/KoPubWorld Dotum Light SDF");
 			label.horizontalAlignment = HorizontalAlignmentOptions.Center;
 			label.verticalAlignment = VerticalAlignmentOptions.Middle;
+			label.rectTransform.anchorMin = Vector2.zero;
+			label.rectTransform.anchorMax = Vector2.one;
+			label.rectTransform.anchoredPosition = Vector2.zero;
+			label.rectTransform.sizeDelta = Vector2.zero;
 
 			// 텍스트 수정.
 			Undo.RecordObject(label, "SetText");
-			label.text = "New UILabelView";
+			label.text = "Label";
 			EditorUtility.SetDirty(label);
 
 			// 선택 처리.
@@ -74,7 +78,7 @@ namespace Crockhead.Unity.UI.Editor
 			var parentTransform = HierarchyExtension.GetSelectionTransform<Transform>(menuCommand);
 
 			// 이미지뷰 생성.
-			var imageview = HierarchyExtension.CreateComponentToHierarchy<UIImageView>("UIImageView", parentTransform);
+			var imageview = HierarchyExtension.CreateComponentToHierarchy<UIImageView>("Image", parentTransform);
 
 			// 트랜스폼 설정.
 			var gameObject = imageview.gameObject;
@@ -185,7 +189,7 @@ namespace Crockhead.Unity.UI.Editor
 		//}
 
 		/// <summary>
-		/// UITexture 생성.
+		/// UITextureView 생성.
 		/// </summary>
 		[MenuItem("GameObject/UI/Crockhead/UITextureView")]
 		public static void CreateUITextureViewToHierarchy(MenuCommand menuCommand)
@@ -194,7 +198,7 @@ namespace Crockhead.Unity.UI.Editor
 			var parentTransform = HierarchyExtension.GetSelectionTransform<Transform>(menuCommand);
 
 			// 텍스쳐 생성.
-			var texture = HierarchyExtension.CreateComponentToHierarchy<UITextureView>("UITextureView", parentTransform);
+			var texture = HierarchyExtension.CreateComponentToHierarchy<UITextureView>("Texture", parentTransform);
 
 			// 트랜스폼 설정.
 			var gameObject = texture.gameObject;
@@ -211,7 +215,7 @@ namespace Crockhead.Unity.UI.Editor
 		}
 
 		/// <summary>
-		/// UIButton 생성.
+		/// UIButtonView 생성.
 		/// </summary>
 		[MenuItem("GameObject/UI/Crockhead/UIButtonView", priority = 5)]
 		public static void CreateUIButtonViewToHierarchy(MenuCommand menuCommand)
@@ -220,7 +224,7 @@ namespace Crockhead.Unity.UI.Editor
 			var parentTransform = HierarchyExtension.GetSelectionTransform<Transform>(menuCommand);
 
 			// 버튼 생성.
-			var button = HierarchyExtension.CreateComponentToHierarchy<UIButtonView>("UIButtonView", parentTransform);
+			var button = HierarchyExtension.CreateComponentToHierarchy<UIButtonView>("Button", parentTransform);
 
 			// 트랜스폼 설정.
 			var gameObject = button.gameObject;
@@ -235,7 +239,7 @@ namespace Crockhead.Unity.UI.Editor
 			EditorUtility.SetDirty(button);
 
 			// 라벨 생성.
-			var label = HierarchyExtension.CreateComponentToHierarchy<UILabelView>("UILabelView", button.transform);
+			var label = HierarchyExtension.CreateComponentToHierarchy<UILabelView>("Label", button.transform);
 
 			// 트랜스폼 설정.
 			//view.RectTransform.ResetRectTransform();
@@ -245,10 +249,14 @@ namespace Crockhead.Unity.UI.Editor
 			//label.font = Resources.Load<TMP_FontAsset>("Font/KoPubWorld Dotum Light SDF");
 			label.horizontalAlignment = HorizontalAlignmentOptions.Center;
 			label.verticalAlignment = VerticalAlignmentOptions.Middle;
+			label.rectTransform.anchorMin = Vector2.zero;
+			label.rectTransform.anchorMax = Vector2.one;
+			label.rectTransform.anchoredPosition = Vector2.zero;
+			label.rectTransform.sizeDelta = Vector2.zero;
 
 			// 텍스트 수정.
 			Undo.RecordObject(label, "SetText");
-			label.text = "New UIButton";
+			label.text = "Label";
 			EditorUtility.SetDirty(label);
 
 			// 선택 처리.
@@ -294,7 +302,7 @@ namespace Crockhead.Unity.UI.Editor
 
 		//	// 텍스트 수정.
 		//	Undo.RecordObject(label, "SetText");
-		//	label.text = "New UIButton";
+		//	label.text = "Label";
 		//	UnityEditor.EditorUtility.SetDirty(label);
 
 		//	// 선택 처리.

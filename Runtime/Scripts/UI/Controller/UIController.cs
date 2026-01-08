@@ -48,9 +48,9 @@ namespace Crockhead.Unity.UI
 		public UIPresentationCoordinator PresentationCoordinator { internal set => SetPresentationCoordinator(value); get => m_PresentationCoordinator; }
 
 		/// <summary>
-		/// 현재 컨트롤러가 제출되었는지 여부.
+		/// 현재 컨트롤러가 제출되어있는 중인지 여부. (Dismiss 시에 false)
 		/// </summary>
-		public bool IsModal => m_PresentationCoordinator != null ? m_PresentationCoordinator.Contains(this) : false;
+		public bool IsBeingPresentation => m_PresentationCoordinator != null ? m_PresentationCoordinator.Contains(this) : false;
 
 		/// <summary>
 		/// 모달 제출 스타일 프로퍼티.
@@ -58,7 +58,12 @@ namespace Crockhead.Unity.UI
 		public UIModalPresentaionStyle ModalPresentationStyle { set => m_ModalPresentationStyle = value; get => m_ModalPresentationStyle; }
 
 		/// <summary>
-		/// 소유한 뷰 프로퍼티. (동기식 자동생성)
+		/// 트랜지션 상태 프로퍼티.
+		/// </summary>
+		public UITransitionStatus TransitionStatus { internal set => SetTransitionStatus(value); get => m_TransitionStatus; }
+
+		/// <summary>
+		/// 소유한 뷰 프로퍼티. (프로퍼티 접근시 뷰가 로드되어있지 않다면 동기 방식으로 자동생성됨)
 		/// </summary>
 		public UIView View
 		{
@@ -140,6 +145,14 @@ namespace Crockhead.Unity.UI
 		internal void SetPresentationCoordinator(UIPresentationCoordinator presentationCoordinator)
 		{
 			m_PresentationCoordinator = presentationCoordinator;
+		}
+
+		/// <summary>
+		/// 트랜지션 상태 설정.
+		/// </summary>
+		internal void SetTransitionStatus(UITransitionStatus transitionStatus)
+		{
+			m_TransitionStatus = transitionStatus;
 		}
 
 		/// <summary>
@@ -279,13 +292,29 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
+		/// 프레젠테이션 스택에 추가됨.
+		/// </summary>
+		protected virtual void OnAddedToPresentationStack()
+		{
+			Debug.Log("[UIController] OnAddedToPresentationStack()");
+		}
+
+		/// <summary>
+		/// 프레젠테이션 스택에서 제거됨.
+		/// </summary>
+		protected virtual void OnRemovedFromPresentationStack()
+		{
+			Debug.Log("[UIController] OnRemovedFromPresentationStack()");
+		}
+
+		/// <summary>
 		/// 뷰 나타나기 직전 호출됨.
 		/// </summary>
 		protected virtual void OnViewWillAppear()
 		{
 			View.gameObject.SetActive(true);
 
-			m_TransitionStatus = UITransitionStatus.Appearing;
+			TransitionStatus = UITransitionStatus.Appearing;
 			//foreach (var child in m_Children)
 			//{
 			//	child.BeginAppearanceTransition(true, animated);
@@ -297,7 +326,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnViewDidAppear()
 		{
-			m_TransitionStatus = UITransitionStatus.Appeared;
+			TransitionStatus = UITransitionStatus.Appeared;
 			//foreach (var child in m_Children)
 			//{
 			//	child.EndAppearanceTransition();
@@ -309,7 +338,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnViewWillDisappear()
 		{
-			m_TransitionStatus = UITransitionStatus.Disappearing;
+			TransitionStatus = UITransitionStatus.Disappearing;
 			//foreach (var child in m_Children)
 			//{
 			//	child.BeginAppearanceTransition(false, animated);
@@ -321,7 +350,7 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		protected virtual void OnViewDidDisappear()
 		{
-			m_TransitionStatus = UITransitionStatus.Disappeared;
+			TransitionStatus = UITransitionStatus.Disappeared;
 			//foreach (var child in m_Children)
 			//{
 			//	child.EndAppearanceTransition();
@@ -388,7 +417,7 @@ namespace Crockhead.Unity.UI
 				return;
 
 			await m_PresentationCoordinator.DismissAsync(this, animated);
-			m_PresentationCoordinator = null;
+			//m_PresentationCoordinator = null;
 		}
 
 		/// <summary>
@@ -433,6 +462,22 @@ namespace Crockhead.Unity.UI
 						break;
 					}
 			}
+		}
+
+		/// <summary>
+		/// 프레젠테이션 스택에 추가 설정.
+		/// </summary>
+		internal void AddToPresentationStack()
+		{
+			OnAddedToPresentationStack();
+		}
+
+		/// <summary>
+		/// 프레젠테이션 스택에서 제거 설정.
+		/// </summary>
+		internal void RemoveFromPresentationStack()
+		{
+			OnRemovedFromPresentationStack();
 		}
 
 		///// <summary>

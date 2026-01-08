@@ -79,15 +79,24 @@ namespace Crockhead.Unity.UI
 			if (controller == null)
 				throw new ArgumentNullException(nameof(controller));
 
-			if (IsPresentingOrDismissing)
+			// 현재 처리 중인 경우에는 처리 할 수 없음.
+			if (m_PresentationStatus == UIPresentationStatus.Presenting)
 			{
-				Debug.LogError("[UIPresentationCoordinator] This Controler is Appearing or Disappearing.");
+				Debug.LogError($"[UIPresentationCoordinator] This controller is currently presenting.");
 				return;
 			}
 
+			// 현재 처리 중인 경우에는 처리 할 수 없음.
+			if (m_PresentationStatus == UIPresentationStatus.Dismissing)
+			{
+				Debug.LogError($"[UIPresentationCoordinator] This controller is currently dismissing.");
+				return;
+			}
+
+			// 이미 체인에 포함 된 객체는 처리 할 수 없음.
 			if (Contains(controller))
 			{
-				Debug.LogError("[UIPresentationCoordinator] This Controler in Chain.");
+				Debug.LogError("[UIPresentationCoordinator] The specified controller is already in the presentation stack.");
 				return;
 			}
 
@@ -98,14 +107,20 @@ namespace Crockhead.Unity.UI
 				var from = m_Controllers.Last?.Value ?? null;
 				var to = controller;
 
-				if (from != null) from.BeginAppearanceTransition(false, animated);
-				if (to != null) to.BeginAppearanceTransition(true, animated);
-				await m_TransitionCoordinator.TransitionAsync(from, to, animated);
-				if (from != null) from.EndAppearanceTransition();
-				if (to != null) to.EndAppearanceTransition();
-
 				// 프레젠테이션 체인에 추가.
 				m_Controllers.AddLast(to);
+				to.AddToPresentationStack();
+
+				// 퇴장, 등장 시작.
+				if (from != null) from.BeginAppearanceTransition(false, animated);
+				to.BeginAppearanceTransition(true, animated);
+
+				// 효과 처리.
+				await m_TransitionCoordinator.TransitionAsync(from, to, animated);
+
+				// 퇴장, 등장 완료.
+				if (from != null) from.EndAppearanceTransition();
+				to.EndAppearanceTransition();
 			}
 			finally
 			{
@@ -124,30 +139,37 @@ namespace Crockhead.Unity.UI
 				throw new ArgumentNullException(nameof(controller));
 
 			// 현재 처리 중인 경우에는 처리 할 수 없음.
-			if (IsPresentingOrDismissing)
+			if (m_PresentationStatus == UIPresentationStatus.Presenting)
 			{
-				Debug.LogError("[UIPresentationCoordinator] This Controler is Appearing or Disappearing.");
+				Debug.LogError($"[UIPresentationCoordinator] This controller is currently presenting.");
 				return;
 			}
 
-			// 체인에 포함 되어있지 않은 객체는 처리 할 수 없음.
-			if (!Contains(controller))
+			// 현재 처리 중인 경우에는 처리 할 수 없음.
+			if (m_PresentationStatus == UIPresentationStatus.Dismissing)
 			{
-				Debug.LogError("[UIPresentationCoordinator] This Controler is Not in Chain.");
+				Debug.LogError($"[UIPresentationCoordinator] This controller is currently dismissing.");
 				return;
 			}
 
 			// 최소 2개는 있어야 처리 할 수 있음.
 			if (m_Controllers.Count < 2)
 			{
-				Debug.LogError("[UIPresentationCoordinator] Chain is Empty.");
+				Debug.LogError("[UIPresentationCoordinator] The presentation stack must contain at least two controllers.");
 				return;
 			}
 
 			// 시작 객체는 처리 불가능.
 			if (m_Controllers.First.Value == controller)
 			{
-				Debug.LogError("[UIPresentationCoordinator] This Controler is Chain First Node.");
+				Debug.LogError("[UIPresentationCoordinator] The specified controller is the root of the presentation stack.");
+				return;
+			}
+
+			// 체인에 포함 되어있지 않은 객체는 처리 할 수 없음.
+			if (!Contains(controller))
+			{
+				Debug.LogError("[UIPresentationCoordinator] The specified controller is not in the presentation stack.");
 				return;
 			}
 
@@ -159,31 +181,47 @@ namespace Crockhead.Unity.UI
 				var from = default(UIController);
 				var to = default(UIController);
 
-				// 순회. (목표 대상 직전까지 처리)
+				// 마지막 요소가 아닐 경우는 현재 요소가 마지막 요소가 될 떄까지 마지막부터 역으로 돌아가며 제거.
 				var current = m_Controllers.Last;
 				while (current.Value != controller)
 				{
 					// 트랜지션 처리.
 					from = current.Value;
 					to = null;
+
+					// 퇴장 시작.
 					from.BeginAppearanceTransition(false, animated);
+
+					// 효과 처리.
 					await m_TransitionCoordinator.TransitionAsync(from, to, animated);
+
+					// 퇴장 완료.
 					from.EndAppearanceTransition();
 
 					// 프레젠테이션 체인에서 제거.
 					current = current.Previous;
 					m_Controllers.Remove(current);
+					to.RemoveFromPresentationStack();
 				}
 
-				// 트랜지션 처리. (목표 대상과 목표 대상 직전의 대상 처리)
-				from = m_Controllers.Last.Value;
+				// 트랜지션 처리.
+				from = m_Controllers.Last.Value; // 인자로 받은 controller와 동일.
 				to = presenting.Value;
+
+				// 퇴장, 등장 시작.
 				from.BeginAppearanceTransition(false, animated);
 				to.BeginAppearanceTransition(true, animated);
+
+				// 효과 처리.
 				await m_TransitionCoordinator.TransitionAsync(from, to, animated);
+
+				// 퇴장, 등장 완료.
 				from.EndAppearanceTransition();
 				to.EndAppearanceTransition();
 
+				// 프레젠테이션 체인에서 제거.
+				m_Controllers.Remove(from);
+				from.RemoveFromPresentationStack();
 			}
 			finally
 			{

@@ -28,22 +28,39 @@ namespace Crockhead.Unity.UI.Editor
 			IsImmediateUpdate = true;
 
 			m_Controllers = new List<UIController>();
-			//m_ReorderableList = new ReorderableList(m_Controllers, typeof(UIController), false, true, false, false);
-			//m_ReorderableList.drawHeaderCallback = OnDrawHeader;
-			m_ReorderableList = new ReorderableList(m_Controllers, typeof(UIController), false, false, false, false);
+			m_ReorderableList = new ReorderableList(m_Controllers, typeof(UIController), false, true, false, false);
+			m_ReorderableList.drawHeaderCallback = OnDrawHeader;
 			m_ReorderableList.drawElementCallback = OnDrawElement;
 			m_ReorderableList.elementHeight = EditorGUIUtility.singleLineHeight + 4;
 		}
 
-		//private void OnDrawHeader(Rect rect)
-		//{
-		//	EditorGUI.LabelField(rect, "Stack (Top → Bottom)");
-		//}
+		/// <summary>
+		/// 헤더 표시.
+		/// </summary>
+		private void OnDrawHeader(Rect rect)
+		{
+			EditorGUI.LabelField(rect, "Presentation");
+		}
 
+		/// <summary>
+		/// 항목 표시.
+		/// </summary>
 		private void OnDrawElement(Rect rect, int index, bool isActive, bool isFocused)
 		{
+			if (index < 0 || index >= m_Controllers.Count)
+				return;
+
 			rect.y += 2;
-			EditorGUI.LabelField(rect, m_Controllers[index]?.ToString() ?? "<null>");
+
+			var controller = m_Controllers[index];
+			if (controller != null)
+			{
+				EditorGUI.LabelField(rect, $"{controller}");
+			}
+			else
+			{
+				EditorGUI.LabelField(rect, $"<null>");
+			}
 		}
 
 		/// <summary>
@@ -64,7 +81,7 @@ namespace Crockhead.Unity.UI.Editor
 			var component = target as UIWindow;
 
 			//EditorGUILayout.Space();
-			EditorGUILayout.LabelField("Presentation", EditorStyles.boldLabel);
+			//EditorGUILayout.LabelField("Presentation", EditorStyles.boldLabel);
 
 			if (Application.isPlaying)
 			{
@@ -79,7 +96,7 @@ namespace Crockhead.Unity.UI.Editor
 			}
 			else
 			{
-				EditorGUILayout.HelpBox("Presentation History is Playmode Only.", MessageType.Warning);
+				EditorGUILayout.HelpBox("Presentation List is Playmode Only.", MessageType.Warning);
 			}
 		}
 	}

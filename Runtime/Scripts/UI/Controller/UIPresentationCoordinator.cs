@@ -49,6 +49,11 @@ namespace Crockhead.Unity.UI
 		public UIController Last => m_Controllers.Last?.Value ?? null;
 
 		/// <summary>
+		/// 가장 나중에 추가된 컨트롤러 프로퍼티. (Foreground)
+		/// </summary>
+		public UIController Foreground => Last;
+
+		/// <summary>
 		/// 컨트롤러 목록 프로퍼티.
 		/// </summary>
 		public IEnumerable<UIController> Controllers => m_Controllers;
@@ -100,6 +105,7 @@ namespace Crockhead.Unity.UI
 				return;
 			}
 
+			var previousForeground = Foreground;
 			m_PresentationStatus = UIPresentationStatus.Presenting;
 			try
 			{
@@ -121,6 +127,10 @@ namespace Crockhead.Unity.UI
 				// 퇴장, 등장 완료.
 				if (from != null) from.EndAppearanceTransition();
 				to.EndAppearanceTransition();
+
+				// 최상위 설정.
+				if (previousForeground != null) previousForeground.ExitForeground();
+				to.EnterForeground();
 			}
 			finally
 			{
@@ -173,6 +183,7 @@ namespace Crockhead.Unity.UI
 				return;
 			}
 
+			var previousForeground = Foreground;
 			m_PresentationStatus = UIPresentationStatus.Dismissing;
 			try
 			{
@@ -222,6 +233,10 @@ namespace Crockhead.Unity.UI
 				// 프레젠테이션 체인에서 제거.
 				m_Controllers.Remove(from);
 				from.RemoveFromPresentationStack();
+
+				// 최상위 설정.
+				if (previousForeground != null) previousForeground.ExitForeground();
+				to.EnterForeground();
 			}
 			finally
 			{
@@ -274,6 +289,23 @@ namespace Crockhead.Unity.UI
 		{
 			var node = GetPresenting(controller);
 			return node?.Value ?? null;
+		}
+
+		/// <summary>
+		/// 인덱스 반환.
+		/// </summary>
+		public int IndexOf(UIController controller)
+		{
+			var index = 0;
+			foreach (var node in m_Controllers)
+			{
+				if (node == controller)
+					return index;
+
+				++index;
+			}
+
+			return -1;
 		}
 	}
 }

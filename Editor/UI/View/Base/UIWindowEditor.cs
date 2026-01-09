@@ -50,8 +50,16 @@ namespace Crockhead.Unity.UI.Editor
 			if (index < 0 || index >= m_Controllers.Count)
 				return;
 
-			rect.y += 2;
+			var isClicked = false;
+			var currentEvent = Event.current;
+			if (currentEvent.type == EventType.MouseDown && currentEvent.button == 0 && rect.Contains(currentEvent.mousePosition))
+			{
+				// 선택/드래그 등 기본 처리 차단.
+				currentEvent.Use();
+				isClicked = true;
+			}
 
+			rect.y += 2;
 			var controller = m_Controllers[index];
 			if (controller != null)
 			{
@@ -61,6 +69,24 @@ namespace Crockhead.Unity.UI.Editor
 			{
 				EditorGUI.LabelField(rect, $"<null>");
 			}
+
+			if (isClicked)
+			{
+				OnClickElement(controller);
+			}
+		}
+
+		/// <summary>
+		/// 클릭됨.
+		/// </summary>
+		private void OnClickElement(UIController controller)
+		{
+			if (controller == null || controller.LoadedView == null)
+				return;
+
+			var targetObject = controller.LoadedView.gameObject;
+			//Selection.activeGameObject = targetObject;
+			EditorGUIUtility.PingObject(targetObject);
 		}
 
 		/// <summary>

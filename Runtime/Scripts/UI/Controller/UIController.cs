@@ -132,30 +132,6 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 윈도우 설정.
-		/// </summary>
-		internal void SetWindow(UIWindow window)
-		{
-			m_Window = window;
-		}
-
-		/// <summary>
-		/// 프레젠테이션 조정자 설정.
-		/// </summary>
-		internal void SetPresentationCoordinator(UIPresentationCoordinator presentationCoordinator)
-		{
-			m_PresentationCoordinator = presentationCoordinator;
-		}
-
-		/// <summary>
-		/// 트랜지션 상태 설정.
-		/// </summary>
-		internal void SetTransitionStatus(UITransitionStatus transitionStatus)
-		{
-			m_TransitionStatus = transitionStatus;
-		}
-
-		/// <summary>
 		/// 뷰 로드.
 		/// </summary>
 		public void LoadView()
@@ -292,7 +268,7 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 프레젠테이션 스택에 추가됨.
+		/// 컨트롤러가 프레젠테이션 스택에 추가됨.
 		/// </summary>
 		protected virtual void OnAddedToPresentationStack()
 		{
@@ -300,7 +276,7 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 프레젠테이션 스택에서 제거됨.
+		/// 컨트롤러가 프레젠테이션 스택에서 제거됨.
 		/// </summary>
 		protected virtual void OnRemovedFromPresentationStack()
 		{
@@ -310,7 +286,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 나타나기 직전 호출됨.
 		/// </summary>
-		protected virtual void OnViewWillAppear()
+		protected virtual void OnViewWillAppear(bool animated)
 		{
 			View.gameObject.SetActive(true);
 
@@ -336,7 +312,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 사라지기 직전 호출됨.
 		/// </summary>
-		protected virtual void OnViewWillDisappear()
+		protected virtual void OnViewWillDisappear(bool animated)
 		{
 			TransitionStatus = UITransitionStatus.Disappearing;
 			//foreach (var child in m_Children)
@@ -360,17 +336,19 @@ namespace Crockhead.Unity.UI
 		}
 
 		/// <summary>
-		/// 뷰가 최상위가 된 직후 호출됨.
+		/// 컨트롤러가 최상위가 된 직후 호출됨.
 		/// </summary>
-		protected virtual void OnViewDidBecomeTop()
+		protected virtual void OnEnteredForeground()
 		{
+			Debug.Log("[UIController] OnEnteredForeground()");
 		}
 
 		/// <summary>
-		/// 뷰가 최상위가 아니게 된 직후 호출됨.
+		/// 컨트롤러가 최상위가 아니게 된 직후 호출됨.
 		/// </summary>
-		protected virtual void OnViewDidResignTop()
+		protected virtual void OnExitedForeground()
 		{
+			Debug.Log("[UIController] OnExitedForeground()");
 		}
 
 		/// <summary>
@@ -410,6 +388,19 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 철회. (현재 컨트롤러 자신이 스스로 철회) 
 		/// </summary>
+		public void Dismiss(bool animated = false)
+		{
+			// 프레젠테이션 조정자가 없는 경우 발표되지 않은 것. 
+			if (m_PresentationCoordinator == null)
+				return;
+
+			_ = m_PresentationCoordinator.DismissAsync(this, animated);
+			//m_PresentationCoordinator = null;
+		}
+
+		/// <summary>
+		/// 철회. (현재 컨트롤러 자신이 스스로 철회) 
+		/// </summary>
 		public async Task DismissAsync(bool animated = false)
 		{
 			// 프레젠테이션 조정자가 없는 경우 발표되지 않은 것. 
@@ -418,6 +409,30 @@ namespace Crockhead.Unity.UI
 
 			await m_PresentationCoordinator.DismissAsync(this, animated);
 			//m_PresentationCoordinator = null;
+		}
+
+		/// <summary>
+		/// 윈도우 설정.
+		/// </summary>
+		internal void SetWindow(UIWindow window)
+		{
+			m_Window = window;
+		}
+
+		/// <summary>
+		/// 프레젠테이션 조정자 설정.
+		/// </summary>
+		internal void SetPresentationCoordinator(UIPresentationCoordinator presentationCoordinator)
+		{
+			m_PresentationCoordinator = presentationCoordinator;
+		}
+
+		/// <summary>
+		/// 트랜지션 상태 설정.
+		/// </summary>
+		internal void SetTransitionStatus(UITransitionStatus transitionStatus)
+		{
+			m_TransitionStatus = transitionStatus;
 		}
 
 		/// <summary>
@@ -435,11 +450,11 @@ namespace Crockhead.Unity.UI
 
 			if (isAppearing)
 			{
-				OnViewWillAppear();
+				OnViewWillAppear(animated);
 			}
 			else
 			{
-				OnViewWillDisappear();
+				OnViewWillDisappear(animated);
 			}
 		}
 
@@ -478,6 +493,22 @@ namespace Crockhead.Unity.UI
 		internal void RemoveFromPresentationStack()
 		{
 			OnRemovedFromPresentationStack();
+		}
+
+		/// <summary>
+		/// 최상위 지정 설정.
+		/// </summary>
+		internal void EnterForeground()
+		{
+			OnEnteredForeground();
+		}
+
+		/// <summary>
+		/// 최상위에서 지정 해제 설정.
+		/// </summary>
+		internal void ExitForeground()
+		{
+			OnExitedForeground();
 		}
 
 		///// <summary>

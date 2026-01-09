@@ -63,9 +63,9 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 나타나기 직전 호출됨.
 		/// </summary>
-		protected override void OnViewWillAppear()
+		protected override void OnViewWillAppear(bool animated)
 		{
-			base.OnViewWillAppear();
+			base.OnViewWillAppear(animated);
 		}
 
 		/// <summary>
@@ -79,9 +79,9 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 뷰 사라지기 직전 호출됨.
 		/// </summary>
-		protected override void OnViewWillDisappear()
+		protected override void OnViewWillDisappear(bool animated)
 		{
-			base.OnViewWillDisappear();
+			base.OnViewWillDisappear(animated);
 		}
 
 		/// <summary>

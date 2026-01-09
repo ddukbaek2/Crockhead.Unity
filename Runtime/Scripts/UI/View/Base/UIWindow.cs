@@ -35,6 +35,11 @@ namespace Crockhead.Unity.UI
 		public UIWindowCoordinator WindowCoordinator { internal set => SetWindowCoordinator(value); get => m_WindowCoordinator; }
 
 		/// <summary>
+		/// 프레젠테이션 조정자 프로퍼티.
+		/// </summary>
+		public UIPresentationCoordinator PresentationCoordinator => m_PresentationCoordinator;
+
+		/// <summary>
 		/// 캔버스 프로퍼티.
 		/// </summary>
 		public Canvas Canvas => m_Canvas;
@@ -224,6 +229,15 @@ namespace Crockhead.Unity.UI
 			await m_PresentationCoordinator.PresentAsync(controller, false);
 
 			Debug.Log($"[UIWindow] PresentAsync() ==> Complete");
+		}
+
+		/// <summary>
+		/// 컨트롤러 순서 반환.
+		/// </summary>
+		public int GetControllerIndex(UIController controller)
+		{
+			var index = m_PresentationCoordinator.IndexOf(controller);
+			return index;
 		}
 	}
 }

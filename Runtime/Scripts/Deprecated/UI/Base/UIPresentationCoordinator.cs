@@ -71,9 +71,9 @@ namespace Crockhead.Unity.UI.Deprecated
 		public bool IsBusy => IsPresentingOrRetracting;
 
 		/// <summary>
-		/// 가장 나중에 추가된 컨트롤러. (Last)
+		/// 가장 나중에 추가된 컨트롤러 프로퍼티. (Last)
 		/// </summary>
-		public UIController Top => m_Controllers.Last?.Value ?? null;
+		public UIController Foreground => m_Controllers.Last?.Value ?? null;
 
 		/// <summary>
 		/// 생성됨.

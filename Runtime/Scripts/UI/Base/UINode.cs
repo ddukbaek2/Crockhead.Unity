@@ -15,19 +15,20 @@ namespace Crockhead.Unity.UI
 	[RequireComponent(typeof(RectTransform))]
 	public abstract class UINode : UIBehaviour
 	{
-		#region INSPECTOR
-		//[HideInInspector][SerializeField] private RectTransform m_RectTransform;
-		#endregion
-
 		/// <summary>
 		/// 월드 좌표계 기준 사각형 위치.
 		/// </summary>
 		private static readonly Vector3[] s_FourCornersArray = new Vector3[] { Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };
 
-		/// <summary>
-		/// 렉트 트랜스폼.
-		/// </summary>
-		private RectTransform m_RectTransform;
+		#region INSPECTOR
+		//[HideInInspector][SerializeField] private RectTransform m_RectTransform;\
+		[NonSerialized] private RectTransform m_RectTransform;
+		#endregion
+
+		///// <summary>
+		///// 렉트 트랜스폼.
+		///// </summary>
+		//private RectTransform m_RectTransform;
 
 		/// <summary>
 		/// 렉트 트랜스폼 프로퍼티.

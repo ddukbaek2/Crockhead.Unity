@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,7 +14,7 @@ namespace Crockhead.Unity.UI
 	public class UIButtonView : Button, IUIWidget
 	{
 		#region INSPECTOR
-		[SerializeField] private RectTransform m_RectTransform;
+		[NonSerialized] private RectTransform m_RectTransform;
 		#endregion
 
 		/// <summary>

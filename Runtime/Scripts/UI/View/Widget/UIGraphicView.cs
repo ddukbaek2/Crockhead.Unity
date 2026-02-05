@@ -25,7 +25,7 @@ namespace Crockhead.Unity.UI
 
 
 		#region INSPECTOR
-		[SerializeField] private RectTransform m_RectTransform;
+		[NonSerialized] private RectTransform m_RectTransform;
 		#endregion
 
 		/// <summary>

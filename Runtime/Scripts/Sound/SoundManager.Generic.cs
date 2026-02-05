@@ -54,6 +54,9 @@ namespace Crockhead.Unity
 		/// </summary>
 		protected virtual void Update()
 		{
+			if (!IsCreated)
+				return;
+
 			var activeSoundCount = m_ActiveSounds.Count;
 			if (activeSoundCount == 0)
 				return;

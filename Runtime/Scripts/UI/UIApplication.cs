@@ -10,7 +10,7 @@ namespace Crockhead.Unity.UI
 	/// <summary>
 	/// UI 애플리케이션.
 	/// </summary>
-	//[AssetPath("Assets/Resources/Base/UIApplication.prefab", AssetPathType.Resources)]
+	[AssetPath("Assets/Resources/Base/UIApplicationTemplate.prefab", AssetPathType.Resources)]
 	public abstract class UIApplication<TUIApplication> : SharedComponent<TUIApplication>
 		where TUIApplication : UIApplication<TUIApplication>
 	{

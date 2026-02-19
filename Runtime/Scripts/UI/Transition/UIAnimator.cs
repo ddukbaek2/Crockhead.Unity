@@ -1,5 +1,5 @@
 using Crockhead.Core;
-using DG.Tweening;
+//using DG.Tweening;
 using System;
 using System.Collections;
 using System.Threading.Tasks;
@@ -21,7 +21,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 애니메이션 진행 중 여부 프로퍼티.
 		/// </summary>
-		public bool IsPlaying => m_Animation.Sequence.IsPlaying();
+		public bool IsPlaying => false;// m_Animation.Sequence.IsPlaying();
 
 		/// <summary>
 		/// 생성됨.
@@ -53,12 +53,13 @@ namespace Crockhead.Unity.UI
 		{
 			static IEnumerator Process(UIAnimation animation)
 			{
-				yield return new WaitForSeconds(animation.Duration);
-				yield return animation.Sequence.WaitForCompletion();
+				//yield return new WaitForSeconds(animation.Duration);
+				//yield return animation.Sequence.WaitForCompletion();
+				yield break;
 			}
 
-			m_Animation.Prepare(duration, action);
-			m_Animation.Play();
+			//m_Animation.Prepare(duration, action);
+			//m_Animation.Play();
 			await TaskHelper.StartForeground(Process(m_Animation));
 		}
 
@@ -69,11 +70,12 @@ namespace Crockhead.Unity.UI
 		{
 			static IEnumerator Process(UIAnimation animation)
 			{
-				yield return animation.Sequence.WaitForCompletion();
+				//yield return animation.Sequence.WaitForCompletion();
+				yield break;
 			}
 
-			m_Animation.Play();
-			m_Animation.Sequence.WaitForCompletion();
+			//m_Animation.Play();
+			//m_Animation.Sequence.WaitForCompletion();
 			await TaskHelper.StartForeground(Process(m_Animation));
 		}
 	}

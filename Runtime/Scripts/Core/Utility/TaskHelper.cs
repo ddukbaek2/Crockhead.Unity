@@ -1,4 +1,4 @@
-using DG.Tweening;
+//using DG.Tweening;
 using System;
 using System.Collections;
 using System.Threading.Tasks;
@@ -77,32 +77,32 @@ namespace Crockhead.Unity
 			return taskCompletionSource.Task;
 		}
 
-		/// <summary>
-		/// 두트윈 비동기 대기 객체를 태스크로 변환.
-		/// </summary>
-		public static Task WaitForCompletion(this Tween tween)
-		{
-			var taskCompletionSource = new TaskCompletionSource<bool>();
-			if (tween == null)
-			{
-				taskCompletionSource.TrySetResult(false);
-				return taskCompletionSource.Task;
-			}
+		///// <summary>
+		///// 두트윈 비동기 대기 객체를 태스크로 변환.
+		///// </summary>
+		//public static Task WaitForCompletion(this Tween tween)
+		//{
+		//	var taskCompletionSource = new TaskCompletionSource<bool>();
+		//	if (tween == null)
+		//	{
+		//		taskCompletionSource.TrySetResult(false);
+		//		return taskCompletionSource.Task;
+		//	}
 
-			void Completed()
-			{
-				taskCompletionSource.TrySetResult(true);
-			}
+		//	void Completed()
+		//	{
+		//		taskCompletionSource.TrySetResult(true);
+		//	}
 
-			void Disposed()
-			{
-				taskCompletionSource.TrySetResult(false);
-			}
+		//	void Disposed()
+		//	{
+		//		taskCompletionSource.TrySetResult(false);
+		//	}
 
-			tween.OnComplete(Completed);
-			tween.OnKill(Disposed);
-			return taskCompletionSource.Task;
-		}
+		//	tween.OnComplete(Completed);
+		//	tween.OnKill(Disposed);
+		//	return taskCompletionSource.Task;
+		//}
 
 		/// <summary>
 		/// 코루틴 태스크 실행. (메인 쓰레드 / 엔진 매니지드 타이밍)

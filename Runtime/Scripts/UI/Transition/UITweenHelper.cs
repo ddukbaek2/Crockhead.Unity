@@ -1,5 +1,5 @@
-using DG.Tweening;
-using DG.Tweening.Plugins.Options;
+//using DG.Tweening;
+//using DG.Tweening.Plugins.Options;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +15,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 생성자 델리게이트.
 		/// </summary>
-		public delegate Tweener CreateDelegate<TTarget, TValue>(TTarget target, TValue from, TValue to, float duration);
+		//public delegate Tweener CreateDelegate<TTarget, TValue>(TTarget target, TValue from, TValue to, float duration);
 
 		/// <summary>
 		/// 설정자 델리게이트.
@@ -62,42 +62,42 @@ namespace Crockhead.Unity.UI
 			s_Setters = new Dictionary<string, Delegate>();
 			s_Properties = new HashSet<string>();
 
-			Register<UIView, Vector3, VectorOptions>("transform.localPosition",
-				static (target, value) => target.transform.localPosition = value,
-				static (target) => target.transform.localPosition);
-			Register<UIView, Vector3, VectorOptions>("transform.localScale",
-				static (target, value) => target.transform.localScale = value,
-				static (target) => target.transform.localScale);
-			Register<UIView, Vector3, VectorOptions>("transform.localEulerAngles",
-				static (target, value) => target.transform.localEulerAngles = value,
-				static (target) => target.transform.localEulerAngles);
-			Register<UIView, Vector2, VectorOptions>("rectTransform.anchoredPosition",
-				static (target, value) => target.RectTransform.anchoredPosition = value,
-				static (target) => target.RectTransform.anchoredPosition);
-			Register<UIView, Vector3, VectorOptions>("rectTransform.anchoredPosition3D",
-				static (target, value) => target.RectTransform.anchoredPosition3D = value,
-				static (target) => target.RectTransform.anchoredPosition3D);
-			Register<UIView, Vector2, VectorOptions>("rectTransform.sizeDelta",
-				static (target, value) => target.RectTransform.sizeDelta = value,
-				static (target) => target.RectTransform.sizeDelta);
-			Register<UIView, Vector2, VectorOptions>("rectTransform.pivot",
-				static (target, value) => target.RectTransform.pivot = value,
-				static (target) => target.RectTransform.pivot);
-			Register<UIView, Vector2, VectorOptions>("rectTransform.offsetMax",
-				static (target, value) => target.RectTransform.offsetMax = value,
-				static (target) => target.RectTransform.offsetMax);
-			Register<UIView, Vector2, VectorOptions>("rectTransform.offsetMin",
-				static (target, value) => target.RectTransform.offsetMin = value,
-				static (target) => target.RectTransform.offsetMin);
-			Register<UIView, Vector2, VectorOptions>("rectTransform.anchorMax",
-				static (target, value) => target.RectTransform.anchorMax = value,
-				static (target) => target.RectTransform.anchorMax);
-			Register<UIView, Vector2, VectorOptions>("rectTransform.anchorMin",
-				static (target, value) => target.RectTransform.anchorMin = value,
-				static (target) => target.RectTransform.anchorMin);
-			Register<UIView, float, FloatOptions>("canvasGroup.alpha",
-				static (target, value) => target.GetComponent<CanvasGroup>().alpha = value,
-				static (target) => target.GetComponent<CanvasGroup>().alpha);
+			//Register<UIView, Vector3, VectorOptions>("transform.localPosition",
+			//	static (target, value) => target.transform.localPosition = value,
+			//	static (target) => target.transform.localPosition);
+			//Register<UIView, Vector3, VectorOptions>("transform.localScale",
+			//	static (target, value) => target.transform.localScale = value,
+			//	static (target) => target.transform.localScale);
+			//Register<UIView, Vector3, VectorOptions>("transform.localEulerAngles",
+			//	static (target, value) => target.transform.localEulerAngles = value,
+			//	static (target) => target.transform.localEulerAngles);
+			//Register<UIView, Vector2, VectorOptions>("rectTransform.anchoredPosition",
+			//	static (target, value) => target.RectTransform.anchoredPosition = value,
+			//	static (target) => target.RectTransform.anchoredPosition);
+			//Register<UIView, Vector3, VectorOptions>("rectTransform.anchoredPosition3D",
+			//	static (target, value) => target.RectTransform.anchoredPosition3D = value,
+			//	static (target) => target.RectTransform.anchoredPosition3D);
+			//Register<UIView, Vector2, VectorOptions>("rectTransform.sizeDelta",
+			//	static (target, value) => target.RectTransform.sizeDelta = value,
+			//	static (target) => target.RectTransform.sizeDelta);
+			//Register<UIView, Vector2, VectorOptions>("rectTransform.pivot",
+			//	static (target, value) => target.RectTransform.pivot = value,
+			//	static (target) => target.RectTransform.pivot);
+			//Register<UIView, Vector2, VectorOptions>("rectTransform.offsetMax",
+			//	static (target, value) => target.RectTransform.offsetMax = value,
+			//	static (target) => target.RectTransform.offsetMax);
+			//Register<UIView, Vector2, VectorOptions>("rectTransform.offsetMin",
+			//	static (target, value) => target.RectTransform.offsetMin = value,
+			//	static (target) => target.RectTransform.offsetMin);
+			//Register<UIView, Vector2, VectorOptions>("rectTransform.anchorMax",
+			//	static (target, value) => target.RectTransform.anchorMax = value,
+			//	static (target) => target.RectTransform.anchorMax);
+			//Register<UIView, Vector2, VectorOptions>("rectTransform.anchorMin",
+			//	static (target, value) => target.RectTransform.anchorMin = value,
+			//	static (target) => target.RectTransform.anchorMin);
+			//Register<UIView, float, FloatOptions>("canvasGroup.alpha",
+			//	static (target, value) => target.GetComponent<CanvasGroup>().alpha = value,
+			//	static (target) => target.GetComponent<CanvasGroup>().alpha);
 		}
 
 		/// <summary>
@@ -116,43 +116,43 @@ namespace Crockhead.Unity.UI
 			return (UIProperty)Activator.CreateInstance(genericPropertyType, value);
 		}
 
-		/// <summary>
-		/// 트윈 생성.
-		/// </summary>
-		public static Tweener CreateTweener<TValue>(UIView target, string name, UIProperty from, UIProperty to, float duration)
-		{
-			var creator = GetCreator<UIView, TValue>(name);
-			if (creator == null)
-				return null;
+		///// <summary>
+		///// 트윈 생성.
+		///// </summary>
+		//public static Tweener CreateTweener<TValue>(UIView target, string name, UIProperty from, UIProperty to, float duration)
+		//{
+		//	var creator = GetCreator<UIView, TValue>(name);
+		//	if (creator == null)
+		//		return null;
 
-			var startValue = UIProperty.GetValue<TValue>(from);
-			var endValue = UIProperty.GetValue<TValue>(to);
-			return creator.Invoke(target, startValue, endValue, duration);
-		}
+		//	var startValue = UIProperty.GetValue<TValue>(from);
+		//	var endValue = UIProperty.GetValue<TValue>(to);
+		//	return creator.Invoke(target, startValue, endValue, duration);
+		//}
 
-		/// <summary>
-		/// 트윈 생성.
-		/// </summary>
-		public static Tweener Create<TValue>(UIView target, string name, TValue from, TValue to, float duration)
-		{
-			var creator = GetCreator<UIView, TValue>(name);
-			if (creator == null)
-				return null;
+		///// <summary>
+		///// 트윈 생성.
+		///// </summary>
+		//public static Tweener Create<TValue>(UIView target, string name, TValue from, TValue to, float duration)
+		//{
+		//	var creator = GetCreator<UIView, TValue>(name);
+		//	if (creator == null)
+		//		return null;
 
-			return creator.Invoke(target, from, to, duration);
-		}
+		//	return creator.Invoke(target, from, to, duration);
+		//}
 
-		/// <summary>
-		/// 트윈 생성.
-		/// </summary>
-		public static Tweener Create<TTarget, TValue>(TTarget target, string name, TValue from, TValue to, float duration)
-		{
-			var creator = GetCreator<TTarget, TValue>(name);
-			if (creator == null)
-				return null;
+		///// <summary>
+		///// 트윈 생성.
+		///// </summary>
+		//public static Tweener Create<TTarget, TValue>(TTarget target, string name, TValue from, TValue to, float duration)
+		//{
+		//	var creator = GetCreator<TTarget, TValue>(name);
+		//	if (creator == null)
+		//		return null;
 
-			return creator.Invoke(target, from, to, duration);
-		}
+		//	return creator.Invoke(target, from, to, duration);
+		//}
 
 		/// <summary>
 		/// 생성자 반환.
@@ -187,18 +187,18 @@ namespace Crockhead.Unity.UI
 			return functor;
 		}
 
-		/// <summary>
-		/// 생성자 반환.
-		/// </summary>
-		public static CreateDelegate<TTarget, TValue> GetCreator<TTarget, TValue>(string name)
-		{
-			var functor = GetCreator(name);
-			if (functor == null)
-				return null;
+		///// <summary>
+		///// 생성자 반환.
+		///// </summary>
+		//public static CreateDelegate<TTarget, TValue> GetCreator<TTarget, TValue>(string name)
+		//{
+		//	var functor = GetCreator(name);
+		//	if (functor == null)
+		//		return null;
 
-			var creator = (CreateDelegate<TTarget, TValue>)functor;
-			return creator;
-		}
+		//	var creator = (CreateDelegate<TTarget, TValue>)functor;
+		//	return creator;
+		//}
 
 		/// <summary>
 		/// 설정자 반환.
@@ -226,36 +226,36 @@ namespace Crockhead.Unity.UI
 			return getter;
 		}
 
-		/// <summary>
-		/// 함수자 등록.
-		/// </summary>
-		private static void Register<TTarget, TValue, TPlugOptions>(string name, Setter<TTarget, TValue> setter, Getter<TTarget, TValue> getter)
-			where TPlugOptions : struct, IPlugOptions
-		{
-			if (string.IsNullOrWhiteSpace(name))
-				throw new ArgumentNullException(nameof(name));
-			if (setter == null)
-				throw new ArgumentNullException(nameof(setter));
-			if (getter == null)
-				throw new ArgumentNullException(nameof(setter));
+		///// <summary>
+		///// 함수자 등록.
+		///// </summary>
+		//private static void Register<TTarget, TValue, TPlugOptions>(string name, Setter<TTarget, TValue> setter, Getter<TTarget, TValue> getter)
+		//	where TPlugOptions : struct, IPlugOptions
+		//{
+		//	if (string.IsNullOrWhiteSpace(name))
+		//		throw new ArgumentNullException(nameof(name));
+		//	if (setter == null)
+		//		throw new ArgumentNullException(nameof(setter));
+		//	if (getter == null)
+		//		throw new ArgumentNullException(nameof(setter));
 
-			// 생성.
-			var creator = new CreateDelegate<TTarget, TValue>((target, from, to, duration) =>
-			{
-				setter(target, from);
-				var tween = DOTween.To<TValue, TValue, TPlugOptions>(
-					null,
-					() => getter(target),
-					(value) => setter(target, value),
-					to,
-					duration);
-				return tween;
-			});
+		//	// 생성.
+		//	var creator = new CreateDelegate<TTarget, TValue>((target, from, to, duration) =>
+		//	{
+		//		setter(target, from);
+		//		var tween = DOTween.To<TValue, TValue, TPlugOptions>(
+		//			null,
+		//			() => getter(target),
+		//			(value) => setter(target, value),
+		//			to,
+		//			duration);
+		//		return tween;
+		//	});
 
-			s_Getters[name] = getter;
-			s_Setters[name] = setter;
-			s_Creators[name] = creator;
-			s_Properties.Add(name);
-		}
+		//	s_Getters[name] = getter;
+		//	s_Setters[name] = setter;
+		//	s_Creators[name] = creator;
+		//	s_Properties.Add(name);
+		//}
 	}
 }

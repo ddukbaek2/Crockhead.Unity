@@ -1,5 +1,5 @@
 using Crockhead.Core;
-using DG.Tweening;
+//using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,7 +21,7 @@ namespace Crockhead.Unity.UI
 		/// <summary>
 		/// 트윈 목록에 대한 그룹 시퀀스.
 		/// </summary>
-		private Sequence m_Sequence;
+		//private Sequence m_Sequence;
 
 		/// <summary>
 		/// 이전 프로퍼티 목록.
@@ -38,15 +38,15 @@ namespace Crockhead.Unity.UI
 		/// </summary>
 		private HashSet<string> m_Properties;
 
-		/// <summary>
-		/// 시퀀스 프로퍼티.
-		/// </summary>
-		public Sequence Sequence => m_Sequence;
+		///// <summary>
+		///// 시퀀스 프로퍼티.
+		///// </summary>
+		//public Sequence Sequence => m_Sequence;
 
-		/// <summary>
-		/// 지속시간 프로퍼티.
-		/// </summary>
-		public float Duration => m_Sequence != null ? TweenExtensions.Duration(m_Sequence) : 0f;
+		///// <summary>
+		///// 지속시간 프로퍼티.
+		///// </summary>
+		//public float Duration => m_Sequence != null ? TweenExtensions.Duration(m_Sequence) : 0f;
 
 		/// <summary>
 		/// 생성됨.
@@ -54,7 +54,7 @@ namespace Crockhead.Unity.UI
 		public UIAnimation(UIView view) : base()
 		{
 			m_View = view;
-			m_Sequence = DOTween.Sequence();
+			//m_Sequence = DOTween.Sequence();
 			m_Previous = new Dictionary<string, UIProperty>();
 			m_Next = new Dictionary<string, UIProperty>();
 			m_Properties = new HashSet<string>();
@@ -118,72 +118,72 @@ namespace Crockhead.Unity.UI
 			}
 		}
 
-		/// <summary>
-		/// 변경 될 프로퍼티 목록에 대한 병렬 트윈 목록 생성.
-		/// </summary>
-		private Sequence CreateSequence(float duration)
-		{
-			m_Sequence = DOTween.Sequence();
-			if (m_Properties.Count == 0)
-				return m_Sequence;
+		///// <summary>
+		///// 변경 될 프로퍼티 목록에 대한 병렬 트윈 목록 생성.
+		///// </summary>
+		//private Sequence CreateSequence(float duration)
+		//{
+		//	m_Sequence = DOTween.Sequence();
+		//	if (m_Properties.Count == 0)
+		//		return m_Sequence;
 
-			// 변경점에 대해서 트윈 생성 및 시퀀스에 추가.
-			foreach (var property in m_Properties)
-			{
-				var from = m_Previous[property];
-				var to = m_Next[property];
-				var tweener = UITweenHelper.CreateTweener<Vector3>(m_View, property, from, to, duration);
-				if (tweener == null)
-					continue;
+		//	// 변경점에 대해서 트윈 생성 및 시퀀스에 추가.
+		//	foreach (var property in m_Properties)
+		//	{
+		//		var from = m_Previous[property];
+		//		var to = m_Next[property];
+		//		var tweener = UITweenHelper.CreateTweener<Vector3>(m_View, property, from, to, duration);
+		//		if (tweener == null)
+		//			continue;
 
-				tweener = tweener.SetEase(Ease.Linear).SetUpdate(true).SetAutoKill(false);
-				m_Sequence.Join(tweener);
-			}
+		//		tweener = tweener.SetEase(Ease.Linear).SetUpdate(true).SetAutoKill(false);
+		//		m_Sequence.Join(tweener);
+		//	}
 
-			return m_Sequence;
-		}
+		//	return m_Sequence;
+		//}
 
-		/// <summary>
-		/// 준비.
-		/// <para>animation 이벤트에서 프로퍼티값을 변화할 경우 지속시간동안 트랜지션 처리.</para>
-		/// </summary>
-		public Sequence Prepare(float duration, Action animation)
-		{
-			// 프로퍼티 검사.
-			BeginProperties(m_View);
-			animation?.Invoke();
-			EndProperties();
-			CreateSequence(duration);
-			return m_Sequence;
-		}
+		///// <summary>
+		///// 준비.
+		///// <para>animation 이벤트에서 프로퍼티값을 변화할 경우 지속시간동안 트랜지션 처리.</para>
+		///// </summary>
+		//public Sequence Prepare(float duration, Action animation)
+		//{
+		//	// 프로퍼티 검사.
+		//	BeginProperties(m_View);
+		//	animation?.Invoke();
+		//	EndProperties();
+		//	CreateSequence(duration);
+		//	return m_Sequence;
+		//}
 
-		/// <summary>
-		/// 시작.
-		/// </summary>
-		public void Play()
-		{
-			if (m_Sequence.IsPlaying())
-				return;
+		///// <summary>
+		///// 시작.
+		///// </summary>
+		//public void Play()
+		//{
+		//	if (m_Sequence.IsPlaying())
+		//		return;
 
-			m_Sequence.Play();
-		}
+		//	m_Sequence.Play();
+		//}
 
-		/// <summary>
-		/// 정지.
-		/// </summary>
-		public void Stop(bool completed = false)
-		{
-			if (!m_Sequence.IsPlaying())
-				return;
+		///// <summary>
+		///// 정지.
+		///// </summary>
+		//public void Stop(bool completed = false)
+		//{
+		//	if (!m_Sequence.IsPlaying())
+		//		return;
 
-			if (completed)
-			{
-				m_Sequence.Complete();
-			}
-			else
-			{
-				m_Sequence.Kill();
-			}
-		}
+		//	if (completed)
+		//	{
+		//		m_Sequence.Complete();
+		//	}
+		//	else
+		//	{
+		//		m_Sequence.Kill();
+		//	}
+		//}
 	}
 }

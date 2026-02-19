@@ -60,13 +60,13 @@ namespace Crockhead.Unity.UI.Deprecated
 			base.OnDestroy();
 		}
 
-		/// <summary>
-		/// 애니메이션.
-		/// </summary>
-		public static async Task Animate(UIView view, float duration, Action animation)
-		{
-			var animator = new UIAnimator(view);
-			await animator.AnimateAsync(duration, animation);
-		}
+		///// <summary>
+		///// 애니메이션.
+		///// </summary>
+		//public static async Task Animate(UIView view, float duration, Action animation)
+		//{
+		//	var animator = new UIAnimator(view);
+		//	await animator.AnimateAsync(duration, animation);
+		//}
 	}
 }
